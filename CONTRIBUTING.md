@@ -2,7 +2,7 @@
 
 This repo is the agent configuration for System 9 Studios' work on Andara's World. It's public so the process (roles, skills, canon rules) can be reused, but it's maintained for that project first.
 
-- **Issues** are welcome: bugs, questions, and ideas.
+- **Issues** are welcome: bugs, questions, and ideas. If an agent did the wrong thing, use the *Skill refinement* form.
 - **Pull requests:** open an issue first so we can agree on the change. A PR without one may be closed.
 - Contributions are under Apache-2.0, the repo's license.
 - **No setting content.** The world (canon, terminology, places, people, the house style) never goes in this repo, not even in examples. Examples use labelled stand-ins.
