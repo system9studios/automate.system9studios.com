@@ -1,0 +1,21 @@
+{
+  "name": "system9studios",
+  "owner": {
+    "name": "Solo7"
+  },
+  "metadata": {
+    "description": "System 9 Studios: Claude Code plugins for creating Andara's World content and game design, and the agent config for the Andara repos."
+  },
+  "plugins": [
+    {
+      "name": "andaras-world",
+      "source": "./plugins/andaras-world",
+      "description": "Andara's World: world building, concept art, content development, writing assistant."
+    },
+    {
+      "name": "andara-design",
+      "source": "./plugins/andara-design",
+      "description": "Andara's World game design: turn approved canon into mechanics and testable server requirements."
+    }
+  ]
+}

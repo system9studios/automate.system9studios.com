@@ -1,0 +1,9 @@
+{
+  "description": "Andara's World content repo (valesordev/andara.solo7.media): Builder packs, the approved-canon mirror, content docs. Roles: content, producer, world-builder, concept-art, writing-assistant, game-designer.",
+  "plugins": [
+    "valesor-dev",
+    "andaras-world",
+    "andara-design"
+  ],
+  "roles": "roles"
+}

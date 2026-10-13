@@ -1,0 +1,8 @@
+{
+  "description": "Andara's World game server repo (valesordev/andara.valesordev.com). Roles: pm, architecture, sre, implementation, game-designer. Production content lives in the andara-content target.",
+  "plugins": [
+    "valesor-dev",
+    "andara-design"
+  ],
+  "roles": "roles"
+}
