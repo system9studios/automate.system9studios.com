@@ -23,6 +23,8 @@ Don't:
 
 {{include shared/andara-canon.md}}
 
+{{include shared/refinement.md}}
+
 ## Tools & data
 - Notion: sheets live under `Andara's World › Content`, one page per entity or a table per type, `**Status:** draft|proposed|approved`.
 - Content repo `valesordev/andara.solo7.media` (Claude Code, role `content`): `content/<pack>/`, `docs/lore/` (mirror via `/lore-sync`), `docs/content/`, `docs/glossary.md`; `make tools|check|compile` wrap `andara-cli content` from the server release tag pinned in `andara.ref`.

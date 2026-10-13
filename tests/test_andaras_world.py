@@ -74,6 +74,15 @@ class StructureTest(unittest.TestCase):
         self.assertIn("{{include shared/study-brief.md}}",
                       (PLUGIN / "src/skills/concept-study/references/study-brief.md").read_text())
 
+    def test_refinement_contract_reaches_every_role(self):
+        rendered = [*(PLUGIN / "agents").glob("*.md"), *(PLUGIN / "roles").glob("*.md"),
+                    ROOT / "plugins/andara-design/roles/game-designer.md"]
+        for f in rendered:
+            t = f.read_text()
+            self.assertIn("## Refinement issues", t, f)
+            self.assertIn("system9studios/automate.system9studios.com", t, f)
+        self.assertIn("{{include shared/refinement.md}}", (PLUGIN / "instructions/project.md").read_text())
+
     def test_concept_workflow_skills_cross_reference(self):
         sheet = (PLUGIN / "skills/concept-sheet/SKILL.md").read_text()
         for s in ("house-style", "concept-study", "art-review"):

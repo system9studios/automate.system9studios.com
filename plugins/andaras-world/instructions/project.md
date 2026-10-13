@@ -21,6 +21,8 @@ Assist-level rules:
 
 {{include shared/andara-canon.md}}
 
+{{include shared/refinement.md}}
+
 ## Session flow
 1. Read the tracker and the approved pages the request touches. Don't rely on memory of canon; re-read.
 2. If the owner hasn't named the work, propose the next tracker item in §19 phase order whose dependencies are approved.
