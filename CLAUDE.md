@@ -8,7 +8,7 @@ Help the owner move projects forward, build lasting skills while doing it, and u
 
 ## Sources of truth
 
-- **This repo**: everything agents execute, and how to use it. `docs/` is authoritative for usage (where agents run, setup, the role catalog, workflows), with the reference beside the code (each plugin's `README.md`). It is public: no secrets, no personal names (say "the owner"), no private Notion links, no machine-specific paths.
+- **This repo**: everything agents execute, and how to use it. `docs/` is authoritative for usage (where agents run, setup, the role catalog, workflows), with the reference beside the code (each plugin's `README.md`). It is public: no secrets, no personal names (say "the owner"), no private Notion links, no machine-specific paths. `make check-public` enforces it (Notion links, the owner's denylist, gitleaks over the whole history, the setting-term guard), and CI runs it on every PR and push to `main`.
 - **Direction** (rationale, roadmap, decision log) is the owner's, kept privately. Nothing here depends on it: a doc that needs a decision states the decision.
 - **Docs site.** `make docs-export SITE=<sites monorepo>` writes `docs/` to its `content/automate.system9studios.com/`; the site build and deploy live there. Change a usage doc here in the same PR as the behavior it describes.
 - **No setting content.** Canon (terminology and its register, tone guardrails, named places, factions, people, history), the content tracker, and Notion page titles live in the owner's Notion and the content repo's `docs/lore/` mirror. Agents read them at runtime (`shared/andara-canon.md` says how). Process rules (status line, `[PROPOSED]`, revisions, the information-hierarchy mechanism, tracker discipline, handoffs) live here. Examples use stand-ins, never real canon. `tests/test_targets.py` fails on known setting terms (stored hashed) and private Notion links, across `docs/` too.
@@ -21,7 +21,7 @@ Help the owner move projects forward, build lasting skills while doing it, and u
 ├── .claude-plugin/marketplace.json   # marketplace "system9studios"
 ├── CLAUDE.md                         # this file
 ├── docs/                             # usage docs: getting started, role catalog, workflows (exported to the docs site)
-├── Makefile                          # deps / pin / validate / test / build / package / install / check-target / docs-export / scaffold
+├── Makefile                          # deps / pin / validate / check-public / tools / test / build / package / install / check-target / docs-export / scaffold
 ├── deps.json                         # pins automate.valesordev.com; `make deps` → .deps/valesordev/ (gitignored)
 ├── shared/                           # andara-canon, andara-<role> charters, study-brief: inlined by `make build`
 ├── plugins/
@@ -108,7 +108,7 @@ Assist level: L<n> — <one-line justification>
 1. **Read** the plugin README and the existing files.
 2. **Decide** assist level, boundaries, and naming with the owner if they aren't documented.
 3. **Draft.** For edits, show the diff.
-4. **Validate:** `make validate test`.
+4. **Validate:** `make validate test check-public`.
 5. **Build:** `make build` must leave the tree clean.
 6. **Commit:** feature branch, signed commits, conventional-commit subject scoped by plugin (`feat(andaras-world): …`). The owner merges with a merge commit. Fixes for review comments go in new commits. Bump `version` in `plugin.json` on behavior changes, once per PR.
 
@@ -119,6 +119,8 @@ Assist level: L<n> — <one-line justification>
 | `make deps` | Check out each `deps.json` dependency into `.deps/<name>/` at its ref (a symlink is left alone) |
 | `make pin DEP=<name> REF=<tag>` | Move one dependency's pin, then `make deps` |
 | `make validate` | `check-render`, `claude plugin validate` on the marketplace and each plugin, then the toolkit's `check_conventions.py` |
+| `make check-public [COMMITS=<range>]` | The public-readiness gate: the toolkit's `check_public.py` with the denylist at `$AUTOMATE_DENYLIST` (a file outside every repo; CI reads the `AUTOMATE_DENYLIST` secret; hits name the denylist line, never the term), then the setting-term guard |
+| `make tools` | Fetch the pinned gitleaks into `.tools/` |
 | `make check-render` | Fail if any `plugins/*/src/**` render is stale |
 | `make test` | Plugin structure, both targets installed into scratch repos, lore-check, the setting-content guard; then the scaffold's own tests |
 | `make build` | Render `plugins/*/src/**` in place, and `instructions/*` into `dist/<plugin>/` |
@@ -133,7 +135,7 @@ Assist level: L<n> — <one-line justification>
 
 - Every role declares its assist level, triggers, behaviors, handoffs, and session close.
 - Shared behavior lives in `shared/` and is inlined at build time, not duplicated.
-- `make validate test` passes; `make build` is clean; no setting content in-tree.
+- `make validate test check-public` passes; `make build` is clean; no setting content in-tree.
 - Both Andara repos re-installed and `make check-target` clean when the change touches them.
 - Signed commits on a feature branch, `plugin.json` version bumped if behavior changed.
 

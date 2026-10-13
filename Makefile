@@ -5,7 +5,7 @@ DIST       := dist
 TOOLKIT    := .deps/valesordev/toolkit
 TK         := python3 $(TOOLKIT)
 
-.PHONY: help deps pin toolkit validate check-render build package package-done install check-target docs-export scaffold test dev clean
+.PHONY: help deps pin toolkit validate check-public tools check-render build package package-done install check-target docs-export scaffold test dev clean
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-13s %s\n", $$1, $$2}'
@@ -35,6 +35,13 @@ validate: check-render ## claude plugin validate + authoring conventions (exampl
 	claude plugin validate .
 	@for p in $(PLUGINS); do claude plugin validate plugins/$$p; done
 	@$(TK)/check_conventions.py --root $(CURDIR)
+
+check-public: tools ## Public-readiness gate: Notion links, denylist (AUTOMATE_DENYLIST), gitleaks, setting terms [COMMITS=<range>] [NO_DENYLIST=1]
+	$(TK)/check_public.py --root $(CURDIR) $(if $(COMMITS),--commits $(COMMITS)) $(if $(NO_DENYLIST),--no-denylist)
+	python3 -m unittest discover -s tests -p test_targets.py -k SettingContentTest
+
+tools: toolkit ## Fetch the pinned gitleaks into .tools/, checksum-verified
+	@$(TK)/tools.py --root $(CURDIR)
 
 check-render: toolkit ## Fail if any plugins/*/src/** render is stale
 	@for p in $(PLUGINS); do $(TK)/render.py --root $(CURDIR) --check plugins/$$p; done
