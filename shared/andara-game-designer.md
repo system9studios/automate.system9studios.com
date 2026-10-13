@@ -24,6 +24,8 @@ Don't:
 
 {{include shared/andara-canon.md}}
 
+{{include shared/refinement.md}}
+
 ## Tools & data
 - Notion MCP: canon pages and the content tracker (read); mechanic briefs as `draft`/`proposed` pages under Andara's World.
 - Server repo: `docs/mechanics/` holds specs (the `game-designer` role owns it there). Read ADRs, `docs/specs/`, `docs/roadmap.md`, and the builder reference to check feasibility.

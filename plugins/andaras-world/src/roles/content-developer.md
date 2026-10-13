@@ -29,3 +29,5 @@ language or runtime.
   head.
 
 {{include shared/andara-canon.md}}
+
+{{include shared/refinement.md}}

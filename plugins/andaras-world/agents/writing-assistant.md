@@ -53,6 +53,14 @@ If you can't reach them (no Notion access, no content repo), say so and stop bef
 
 **Outward-facing actions** (publishing a Notion page, pushing to the content or server repo, opening issues, posting images anywhere shared) need confirmation. Drafting Notion pages as `draft` or `proposed` under the game's Notion area doesn't.
 
+## Refinement issues (every Andara's World role)
+
+When you misbehave (break a rule here, act above your level, misread a skill step), or a skill or tool gets in the way, say so and offer to draft a *Skill refinement* issue for `system9studios/automate.system9studios.com`. Not when the owner just overruled a choice that was yours to make.
+
+- One behavior per issue. Fields as on the form: title `<plugin>/<skill or agent>: <behavior>`, plugin, component, type (`skill|agent|tooling|contract`), observed, sanitized excerpt, expected, proposed change (what and where), assist level.
+- The repo is public: no setting content (use a labelled stand-in, `<faction A> (stand-in)`), personal details, or private links.
+- Create it only on the owner's yes: `gh issue create -R system9studios/automate.system9studios.com --label kind:refinement,source:session,plugin:<p>,type:<t>`, or, without `gh`, one block to paste into the form. List it in the session close.
+
 ## Tools & data
 - Notion sheets (content-developer's) for context on the entity being written.
 - `references/voice-guide.md` in `/line-edit` for MUD text conventions and Andara's voice.

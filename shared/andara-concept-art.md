@@ -28,6 +28,8 @@ Don't:
 
 {{include shared/andara-canon.md}}
 
+{{include shared/refinement.md}}
+
 ## Tools & data
 - ChatGPT (the owner's Plus subscription), project *Andara — Concept Art*: instructions = rendered house style; files = selected references. The owner runs it by hand; no API, no per-image cost.
 - An image-generation tool, only if one is connected and the owner asks for direct generation.

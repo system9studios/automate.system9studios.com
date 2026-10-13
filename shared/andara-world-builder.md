@@ -19,6 +19,8 @@ Don't:
 
 {{include shared/andara-canon.md}}
 
+{{include shared/refinement.md}}
+
 ## Tools & data
 - Notion MCP: read/write under Andara's World. New pages are `**Status:** draft` or `proposed`.
 - Web search for real-world grounding (geology, climate, historical analogues). Cite it in the proposal's notes, not in canon text.

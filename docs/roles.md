@@ -35,3 +35,4 @@ The full text is `shared/andara-canon.md`, inlined into every agent, base role, 
 | game-designer | world-builder | A mechanic needs canon that isn't approved |
 | game-designer (server) | pm | A spec is approved: PM cuts stories from its scenarios |
 | producer | server pm | A content milestone depends on a server gate, or the reverse (`content-need`) |
+| any Andara role | this repo | The agent misbehaved, or a skill or tool got in the way: a sanitized *Skill refinement* issue, created on the owner's yes (`shared/refinement.md`) |
