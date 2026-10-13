@@ -71,7 +71,8 @@ class SettingContentTest(unittest.TestCase):
         return hashlib.sha256(s.encode()).hexdigest()[:16]
 
     def test_no_setting_content_in_tree(self):
-        files = run("git", "ls-files", "plugins", "shared", "scaffolds", "targets", cwd=ROOT).stdout.split()
+        files = run("git", "ls-files", "plugins", "shared", "scaffolds", "targets", "docs", "README.md", "CLAUDE.md",
+                    cwd=ROOT).stdout.split()
         self.assertTrue(files)
         hits = set()
         for f in files:
@@ -82,8 +83,20 @@ class SettingContentTest(unittest.TestCase):
         self.assertEqual(sorted(hits), [])
 
     def test_no_private_notion_links(self):
-        files = run("git", "ls-files", cwd=ROOT).stdout.split()
-        self.assertEqual([f for f in files if re.search(r"notion\.(so|com)/(p/)?[0-9a-f]{32}", (ROOT / f).read_text(errors="replace"))], [])
+        files = [f for f in run("git", "ls-files", cwd=ROOT).stdout.split() if not (ROOT / f).is_symlink()]
+        pat = re.compile(r"notion\.(so|com)/(p/)?([\w-]*-)?[0-9a-f]{32}")
+        self.assertEqual([f for f in files if pat.search((ROOT / f).read_text(errors="replace"))], [])
+
+
+class DocsTest(unittest.TestCase):
+    def test_docs_export_cleanly(self):
+        with tempfile.TemporaryDirectory() as site:
+            r = run(sys.executable, str(TOOLKIT / "export_docs.py"), "--root", str(ROOT), "--repo",
+                    "system9studios/automate.system9studios.com", "--dry-run", site)
+        if "uncommitted" in r.stderr:
+            self.skipTest("docs/ has uncommitted changes")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("would write  content/automate.system9studios.com/README.md", r.stdout)
 
 
 if __name__ == "__main__":
