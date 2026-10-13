@@ -131,6 +131,13 @@ Assist level: L<n> — <one-line justification>
 | `make scaffold NAME=andara-content DEST=<path> [INTO=1]` | A new content repo from the scaffold |
 | `make dev` | Register this checkout as local marketplace `system9studios` |
 
+## Issues and backlog
+
+- The backlog for these agents is this repo's GitHub issues, on the org's *Automation* Project. Labels: `plugin:<name>`, `type:skill|agent|tooling|contract`, `kind:bug|refinement|feature`, and `source:session` for anything found while using an agent. Milestones are plugin versions (`<plugin> <version>`). An issue gets one when it's committed to that release.
+- A behavior to change uses the *Skill refinement* form (`.github/ISSUE_TEMPLATE/`): observed, sanitized excerpt, expected, proposed change, assist level.
+- An agent that misbehaves during a session may draft a refinement issue for its repo. It creates the issue only on the owner's yes, as with `content-gap`.
+- Excerpts never carry setting content: use a labelled stand-in.
+
 ## Definition of done
 
 - Every role declares its assist level, triggers, behaviors, handoffs, and session close.
