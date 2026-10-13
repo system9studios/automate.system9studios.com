@@ -8,8 +8,10 @@ Help the owner move projects forward, build lasting skills while doing it, and u
 
 ## Sources of truth
 
-- **This repo**: everything agents execute, and its docs (each plugin's `README.md`). It is public: no secrets, no personal names (say "the owner"), no private Notion links, no machine-specific paths.
-- **No setting content.** Canon (terminology and its register, tone guardrails, named places, factions, people, history), the content tracker, and Notion page titles live in the owner's Notion and the content repo's `docs/lore/` mirror. Agents read them at runtime (`shared/andara-canon.md` says how). Process rules (status line, `[PROPOSED]`, revisions, the information-hierarchy mechanism, tracker discipline, handoffs) live here. Examples use stand-ins, never real canon. `tests/test_targets.py` fails on known setting terms (stored hashed) and private Notion links.
+- **This repo**: everything agents execute, and how to use it. `docs/` is authoritative for usage (where agents run, setup, the role catalog, workflows), with the reference beside the code (each plugin's `README.md`). It is public: no secrets, no personal names (say "the owner"), no private Notion links, no machine-specific paths.
+- **Direction** (rationale, roadmap, decision log) is the owner's, kept privately. Nothing here depends on it: a doc that needs a decision states the decision.
+- **Docs site.** `make docs-export SITE=<sites monorepo>` writes `docs/` to its `content/automate.system9studios.com/`; the site build and deploy live there. Change a usage doc here in the same PR as the behavior it describes.
+- **No setting content.** Canon (terminology and its register, tone guardrails, named places, factions, people, history), the content tracker, and Notion page titles live in the owner's Notion and the content repo's `docs/lore/` mirror. Agents read them at runtime (`shared/andara-canon.md` says how). Process rules (status line, `[PROPOSED]`, revisions, the information-hierarchy mechanism, tracker discipline, handoffs) live here. Examples use stand-ins, never real canon. `tests/test_targets.py` fails on known setting terms (stored hashed) and private Notion links, across `docs/` too.
 - **automate.valesordev.com** (pinned in `deps.json`): the toolkit and the `valesor-dev` plugin both Andara targets vendor. Dependencies run one way, here → V. A `valesor-dev` change is made there, tagged, and pinned here with `make pin DEP=valesordev REF=<tag>`.
 
 ## Repository layout
@@ -18,7 +20,8 @@ Help the owner move projects forward, build lasting skills while doing it, and u
 .
 ├── .claude-plugin/marketplace.json   # marketplace "system9studios"
 ├── CLAUDE.md                         # this file
-├── Makefile                          # deps / pin / validate / test / build / package / install / check-target / scaffold
+├── docs/                             # usage docs: getting started, role catalog, workflows (exported to the docs site)
+├── Makefile                          # deps / pin / validate / test / build / package / install / check-target / docs-export / scaffold
 ├── deps.json                         # pins automate.valesordev.com; `make deps` → .deps/valesordev/ (gitignored)
 ├── shared/                           # andara-canon, andara-<role> charters, study-brief: inlined by `make build`
 ├── plugins/
@@ -122,6 +125,7 @@ Assist level: L<n> — <one-line justification>
 | `make package [ALL=1]` / `make package-done` | Zip changed skills and list changed Project instructions for claude.ai / record them as uploaded |
 | `make install TARGET=<t> DEST=<repo>` | Vendor a target into `<repo>/.claude/` (commit it there) |
 | `make check-target TARGET=<t> DEST=<repo>` | Report drift; exit 1 if the target is edited, outdated, or stale |
+| `make docs-export SITE=<repo> [DRY=1]` | Export `docs/` to the sites monorepo's `content/automate.system9studios.com/` (commit it there) |
 | `make scaffold NAME=andara-content DEST=<path> [INTO=1]` | A new content repo from the scaffold |
 | `make dev` | Register this checkout as local marketplace `system9studios` |
 

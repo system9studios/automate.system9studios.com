@@ -5,7 +5,7 @@ DIST       := dist
 TOOLKIT    := .deps/valesordev/toolkit
 TK         := python3 $(TOOLKIT)
 
-.PHONY: help deps pin toolkit validate check-render build package package-done install check-target scaffold test dev clean
+.PHONY: help deps pin toolkit validate check-render build package package-done install check-target docs-export scaffold test dev clean
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-13s %s\n", $$1, $$2}'
@@ -60,6 +60,10 @@ install: toolkit ## Vendor a target into a repo's .claude/: make install TARGET=
 check-target: toolkit ## Report drift between a target repo and this repo: make check-target TARGET=… DEST=…
 	@test -n "$(TARGET)" -a -n "$(DEST)" || { echo "usage: make check-target TARGET=<name> DEST=<repo path>"; exit 1; }
 	$(TK)/install.py --root $(CURDIR) --check $(TARGET) $(DEST)
+
+docs-export: toolkit ## Export docs/ to a site repo as content/<repo>/: make docs-export SITE=../solo7.media [DRY=1]
+	@test -n "$(SITE)" || { echo "usage: make docs-export SITE=<site repo path> [DRY=1]"; exit 1; }
+	$(TK)/export_docs.py --root $(CURDIR) $(if $(DRY),--dry-run) $(SITE)
 
 scaffold: toolkit ## New repo from scaffolds/: make scaffold NAME=andara-content DEST=… [INTO=1 for an existing git repo]
 	@test -n "$(NAME)" -a -n "$(DEST)" || { echo "usage: make scaffold NAME=<scaffolds/ name> DEST=<repo path> [INTO=1]"; exit 1; }
