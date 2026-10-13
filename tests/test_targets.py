@@ -83,9 +83,9 @@ class SettingContentTest(unittest.TestCase):
         self.assertEqual(sorted(hits), [])
 
     def test_no_private_notion_links(self):
-        files = [f for f in run("git", "ls-files", cwd=ROOT).stdout.split() if not (ROOT / f).is_symlink()]
-        pat = re.compile(r"notion\.(so|com)/(p/)?([\w-]*-)?[0-9a-f]{32}")
-        self.assertEqual([f for f in files if pat.search((ROOT / f).read_text(errors="replace"))], [])
+        # The full gate (denylist, gitleaks) is `make check-public`; this part needs neither.
+        r = run(sys.executable, str(TOOLKIT / "check_public.py"), "--root", str(ROOT), "--no-denylist", "--no-gitleaks")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
 
 
 class DocsTest(unittest.TestCase):

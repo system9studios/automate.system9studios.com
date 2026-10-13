@@ -18,6 +18,11 @@ Claude Code agent configuration for System 9 Studios: a plugin marketplace (`sys
 ```sh
 make deps                                   # once per clone: checks out automate.valesordev.com at its pin
 make test validate                          # validate needs the `claude` CLI
+make check-public                           # nothing private: needs AUTOMATE_DENYLIST (a file outside the repo)
 make install TARGET=andara-content DEST=../andara.solo7.media
 make check-target TARGET=andara-content DEST=../andara.solo7.media
 ```
+
+## License and contributing
+
+Apache-2.0 ([LICENSE](LICENSE)) for the code and skills. The world of Andara's World (canon, the house style, art) isn't in this repo and isn't covered by its license. Issues are welcome; see [CONTRIBUTING](CONTRIBUTING.md) before opening a PR.
