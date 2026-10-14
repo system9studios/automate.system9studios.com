@@ -43,7 +43,11 @@ pin: ## Move one dependency: make pin DEP=valesordev REF=<tag or commit> [RELEAS
 	  git commit -q -m "$$msg" deps.json; \
 	  git push -q -u origin "$$branch"; \
 	  gh pr create --base main --head "$$branch" --title "$$msg" --body "Pins $(DEP) to $(REF). Tagged $(RELEASE) on merge."; \
-	  for _ in {1..24}; do gh pr checks "$$branch" 2>&1 | grep -q 'no checks reported' || break; sleep 5; done; \
+	  for _ in {1..24}; do \
+	    out=$$(gh pr checks "$$branch" 2>&1 || true); \
+	    [[ "$$out" == *"no checks reported"* ]] || break; \
+	    sleep 5; \
+	  done; \
 	  gh pr checks "$$branch" --watch --fail-fast; \
 	  gh pr merge "$$branch" --merge --delete-branch --match-head-commit "$$(git rev-parse "$$branch")"; \
 	  git switch -q main; git pull -q --ff-only origin main; \
