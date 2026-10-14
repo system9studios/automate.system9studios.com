@@ -117,7 +117,7 @@ Assist level: L<n> — <one-line justification>
 | Target | Purpose |
 |---|---|
 | `make deps` | Check out each `deps.json` dependency into `.deps/<name>/` at its ref (a symlink is left alone) |
-| `make pin DEP=<name> REF=<tag>` | Move one dependency's pin, then `make deps` |
+| `make pin DEP=<name> REF=<tag> [RELEASE=<vX.Y.Z>]` | Move one dependency's pin, then `make deps`. With `RELEASE` (from a clean `main`): branch, commit, push, open the PR, wait for checks, merge with a merge commit, delete the branch, then sign and push tag `RELEASE` |
 | `make validate` | `check-render`, `claude plugin validate` on the marketplace and each plugin, then the toolkit's `check_conventions.py` |
 | `make check-public [COMMITS=<range>]` | The public-readiness gate: the toolkit's `check_public.py` with the denylist at `$AUTOMATE_DENYLIST` (a file outside every repo; CI reads the `AUTOMATE_DENYLIST` secret; hits name the denylist line, never the term), then the setting-term guard |
 | `make tools` | Fetch the pinned gitleaks into `.tools/` |

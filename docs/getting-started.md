@@ -46,4 +46,4 @@ First session: `claude`, `/role content`, `/lore-sync`.
 3. Bump `version` in the plugin's `.claude-plugin/plugin.json` on behavior changes.
 4. Re-deliver: `make install` into each repo the change touches (commit `.claude/` there), and re-paste and re-upload to the claude.ai Project (not `aw-author` or `lore-sync`, which need the repo).
 
-`make check-target TARGET=<t> DEST=<repo>` reports drift at any time. A change to `valesor-dev` itself is made in automate.valesordev.com, tagged, and pinned here with `make pin DEP=valesordev REF=<tag>`.
+`make check-target TARGET=<t> DEST=<repo>` reports drift at any time. A change to `valesor-dev` itself is made in automate.valesordev.com, tagged, and pinned here with `make pin DEP=valesordev REF=<tag>` (add `RELEASE=<vX.Y.Z>` to PR, merge, and tag this repo in one step).

@@ -23,10 +23,36 @@ deps: ## Check out each deps.json dependency into .deps/<name>/ at its ref (a sy
 	  echo "  $$name @ $$ref ($$(git -C $$dir rev-parse --short HEAD))"; \
 	done
 
-pin: ## Move one dependency: make pin DEP=valesordev REF=<tag or commit>
-	@test -n "$(DEP)" -a -n "$(REF)" || { echo "usage: make pin DEP=<name> REF=<tag or commit>"; exit 1; }
+pin: ## Move one dependency: make pin DEP=valesordev REF=<tag or commit> [RELEASE=<vX.Y.Z>: PR, merge, tag this repo]
+	@test -n "$(DEP)" -a -n "$(REF)" || { echo "usage: make pin DEP=<name> REF=<tag or commit> [RELEASE=<vX.Y.Z>]"; exit 1; }
+	@if [ -n "$(RELEASE)" ]; then \
+	  [[ "$(RELEASE)" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$$ ]] || { echo "RELEASE must be vX.Y.Z"; exit 1; }; \
+	  [ "$$(git branch --show-current)" = main ] || { echo "RELEASE needs main checked out"; exit 1; }; \
+	  test -z "$$(git status --porcelain)" || { echo "RELEASE needs a clean tree"; exit 1; }; \
+	  git fetch -q --tags origin; \
+	  [ "$$(git rev-parse HEAD)" = "$$(git rev-parse origin/main)" ] || { echo "main is not at origin/main: pull first"; exit 1; }; \
+	  ! git rev-parse -q --verify "refs/tags/$(RELEASE)" >/dev/null || { echo "tag $(RELEASE) already exists"; exit 1; }; \
+	fi
 	@python3 -c 'import json, sys; n, r = sys.argv[1:]; d = json.load(open("deps.json")); d[n]["ref"] = r; open("deps.json", "w").write(json.dumps(d, indent=2) + "\n")' $(DEP) $(REF)
 	@$(MAKE) -s deps
+	@if [ -n "$(RELEASE)" ]; then \
+	  ! git diff --quiet deps.json || { echo "deps.json unchanged: $(DEP) is already at $(REF)"; exit 1; }; \
+	  repo=$$(python3 -c 'import json, sys; print(json.load(open("deps.json"))[sys.argv[1]]["repo"].rsplit("/", 1)[-1].removesuffix(".git"))' $(DEP)); \
+	  branch=chore/$$repo-$(REF); msg="chore: $$repo $(REF)"; \
+	  git switch -q -c "$$branch"; \
+	  git commit -q -m "$$msg" deps.json; \
+	  git push -q -u origin "$$branch"; \
+	  gh pr create --base main --head "$$branch" --title "$$msg" --body "Pins $(DEP) to $(REF). Tagged $(RELEASE) on merge."; \
+	  for _ in {1..24}; do gh pr checks "$$branch" 2>&1 | grep -q 'no checks reported' || break; sleep 5; done; \
+	  gh pr checks "$$branch" --watch --fail-fast; \
+	  gh pr merge "$$branch" --merge --delete-branch --match-head-commit "$$(git rev-parse "$$branch")"; \
+	  git switch -q main; git pull -q --ff-only origin main; \
+	  git branch -D "$$branch" >/dev/null 2>&1 || true; \
+	  [ "$$(git rev-parse HEAD)" = "$$(git rev-parse origin/main)" ] || { echo "main is not at origin/main after merge: tag $(RELEASE) by hand"; exit 1; }; \
+	  git tag -s $(RELEASE) -m "$(RELEASE): pin $(DEP) $(REF)"; \
+	  git push -q origin $(RELEASE); \
+	  echo "  $(RELEASE) tagged at $$(git rev-parse --short HEAD) and pushed"; \
+	fi
 
 toolkit:
 	@test -d $(TOOLKIT) || { echo "no toolkit at $(TOOLKIT): run \`make deps\`"; exit 1; }
