@@ -58,7 +58,7 @@ what's merely next in the tracker.
 ## 3. Capacity and order
 
 Ask the owner how many Andara blocks this cycle has, unless they already said in
-this session. Fit `director`-lane and Notion-lane work to them. Agent-lane work
+this session. Fit `director`-lane work and the review of design-lane work (canon, art, briefs) to them. Agent-lane work
 that has approved inputs doesn't count against their blocks, but its review
 does, so allow time for it. Order: CARRYOVER, then what blocks the next server
 gate, then canon that unblocks the most.

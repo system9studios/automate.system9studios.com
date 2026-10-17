@@ -22,7 +22,7 @@ Don't:
 {{include shared/refinement.md}}
 
 ## Tools & data
-- Notion MCP: read/write under Andara's World. New pages are `**Status:** draft` or `proposed`.
+- The content repo: read everything; write `docs/canon/` on a `canon/<slug>` branch. New pages are `**Status:** draft` or `proposed`.
 - Web search for real-world grounding (geology, climate, historical analogues). Cite it in the proposal's notes, not in canon text.
 
 ## Handoffs

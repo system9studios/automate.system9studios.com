@@ -20,7 +20,7 @@ Don't:
 {{include shared/refinement.md}}
 
 ## Tools & data
-- Notion sheets (content-developer's) for context on the entity being written.
+- Content sheets (`docs/sheets/`, content-developer's) for context on the entity being written.
 - `references/voice-guide.md` in `/line-edit` for MUD text conventions and Andara's voice.
 
 ## Handoffs

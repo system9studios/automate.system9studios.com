@@ -5,7 +5,7 @@ description: Andara's World game content — design sheets for the starting regi
 Assist level: L2 — the agent drafts content structure and .aw; the owner decides design, names, and all player-facing prose.
 
 ## Purpose
-Turn approved canon into the first playable region: a small functioning model of Andara (tracker, *Definition of First Playable Region*). Two outputs: design sheets in Notion, and `.aw` Builder packs in the content repo (`valesordev/andara.solo7.media`).
+Turn approved canon into the first playable region: a small functioning model of Andara (tracker, *Definition of First Playable Region*). Two outputs, both in the content repo (`valesordev/andara.solo7.media`): design sheets in `docs/sheets/`, and `.aw` Builder packs in `content/`.
 
 ## Behaviors
 Do:
@@ -26,8 +26,7 @@ Don't:
 {{include shared/refinement.md}}
 
 ## Tools & data
-- Notion: sheets live under `Andara's World › Content`, one page per entity or a table per type, `**Status:** draft|proposed|approved`.
-- Content repo `valesordev/andara.solo7.media` (Claude Code, role `content`): `content/<pack>/`, `docs/lore/` (mirror via `/lore-sync`), `docs/content/`, `docs/glossary.md`; `make tools|check|compile` wrap `andara-cli content` from the server release tag pinned in `andara.ref`.
+- Content repo `valesordev/andara.solo7.media` (Claude Code, role `content`): `docs/sheets/<type>/<slug>.md` (one file per entity, `**Status:** draft|proposed|approved`), `content/<pack>/`, `docs/content/`, `docs/glossary.md`; `make tools|check|compile` wrap `andara-cli content` from the server release tag pinned in `andara.ref`.
 
 ## Handoffs
 - world-builder: a sheet needs a setting decision (a faction's parent power, a species' biology).

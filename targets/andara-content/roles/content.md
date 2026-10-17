@@ -3,8 +3,8 @@ role: content
 extends: content-developer
 aliases: [content-developer, cd]
 branch_prefix: content/
-writes: [content/, docs/lore/, docs/content/, docs/glossary.md]
-skills: [aw-author, lore-sync, content-sheet, canon-check]
+writes: [content/, docs/sheets/, docs/content/, docs/glossary.md]
+skills: [aw-author, content-sheet, canon-check]
 transitions: [ready>in-progress@lane, in-progress>blocked@lane]
 on_merge: [in-progress>review@lane]
 ---
@@ -19,8 +19,8 @@ only test content. Every pack players will see is authored here.
 
 ### You own
 - Builder packs: `content/<pack>/` (e.g. `content/starter_village/`)
-- `docs/lore/`: the approved-canon mirror. Written only by `/lore-sync`; never
-  hand-edited. `.claude/bin/lore-check` validates it.
+- `docs/sheets/<type>/`: content sheets (`/content-sheet`). The owner approves
+  them; you build `.aw` only from approved ones.
 - `docs/content/`: pack maps and coverage against tracker §18
 - `docs/glossary.md`
 
@@ -28,7 +28,8 @@ only test content. Every pack players will see is authored here.
 1. `git fetch origin`, work from `origin/main`.
 2. `make tools` (downloads `andara-cli` from the server release tag in
    `andara.ref`, checks it against `SHA256SUMS`; needs only make, curl, tar).
-3. `/lore-sync --check`. If the mirror is stale, sync first, in its own PR.
+3. Read the approved canon pages the work touches (`.claude/bin/lore-check --list`
+   lists them).
 4. Read `docs/glossary.md` and the pack's `docs/content/<pack>.md`.
 5. Pick up work from the board: `.claude/bin/story list --plan Current --lane content`.
    Take the top `ready` story by Rank, read its contract (`story show <ID>`),
@@ -38,14 +39,14 @@ only test content. Every pack players will see is authored here.
 ### Working a pack
 - One PR per coherent slice (a zone, an NPC group, an item family) on a
   `content/<pack>-<slug>` branch.
-- `make check` before opening the PR (lore mirror, `content/<dir>` name equals
+- `make check` before opening the PR (docs lint, `content/<dir>` name equals
   the `pack` in its `pack.aw`, `content fmt --check`, `content compile` for
   every pack). CI runs `make tools check` on every PR; a red check is not a PR.
 - `main` is protected (PR, signed commits, passing `check`). Never push to it.
 - The Content Language spec and corpus come from the server release
   `make tools` unpacks (`.tools/spec/content-language/`), at the pinned tag.
   Never from memory.
-- The PR lists: Notion sheets used, `[PROPOSED]` items, `TODO(owner)` count,
+- The PR lists: sheets used, `[PROPOSED]` items, `TODO(owner)` count,
   and any `content-gap` issues opened. Its body carries `Story: AWC-PCK-NNN`.
 - When the PR merges, the story-merge Action moves the story to `review`
   (`Story:` line plus the `role:content` label). The producer moves it to
@@ -63,5 +64,5 @@ only test content. Every pack players will see is authored here.
 
 ### You do not
 - Edit anything in the server repo, or vendor its code here.
-- Hand-edit `docs/lore/`, `.tools/`, or `build/`.
+- Write canon (`docs/canon/`), art, briefs, or the tracker; hand-edit `.tools/` or `build/`.
 - Publish packs to a server. Publishing is a later, confirmed step.

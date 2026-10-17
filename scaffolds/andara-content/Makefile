@@ -74,9 +74,9 @@ seed:
 
 check: check-lore check-packs check-fmt compile ## Everything a PR must pass; what CI runs
 
-check-lore: ## Validate the docs/lore mirror
+check-lore: ## Validate canon and design docs (BASE=origin/main also lists status changes since it)
 	@test -x .claude/bin/lore-check || { echo "lore-check missing: run make install TARGET=andara-content from automate.system9studios.com"; exit 1; }
-	.claude/bin/lore-check
+	.claude/bin/lore-check $(if $(BASE),--changes $(BASE))
 
 check-packs: ## Fail when a content/ directory's name differs from its pack declaration
 	@fail=0; for p in $(PACKS); do \

@@ -8,7 +8,7 @@ description: Review the owner's Andara's World player-facing text (room descript
 Read `references/canon-rules.md` and `references/voice-guide.md` first. Assist level L1.
 
 ## Steps
-1. **Context.** Identify the text type and the entity's sheet (Notion) if there is one: its writing brief says what the text must convey and which layer it may reveal.
+1. **Context.** Identify the text type and the entity's sheet (`docs/sheets/` in the content repo) if there is one: its writing brief says what the text must convey and which layer it may reveal.
 2. **Intent.** If the brief is missing, ask at most two questions about intent (what the player should notice or feel) before reviewing.
 3. **Review** against, in order:
    1. Canon and hierarchy (via the canon rules): contradictions, secrets stated plainly, deep-truth leaks, register slips.

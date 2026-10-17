@@ -12,13 +12,15 @@ Claude: Next unchecked tracker item with approved dependencies: how portals form
         Recommend A.
 You:    A, and nobody can open one deliberately.
         /canon-proposal
-Claude: Created "Portals" (Status: proposed). Decided by the owner: 2 rules.
+Claude: Wrote docs/canon/portals.md on canon/portals (Status: proposed). Decided by the owner: 2 rules.
         [PROPOSED]: formation frequency, warning signs. Tracker impact: resolves
         2 items, partially addresses "consequences of travel".
-        Next action: decide the 3 open questions.
+        Push and open the PR?
+You:    Yes.
+Claude: PR opened. Next action: decide the 3 open questions.
 ```
 
-You review the page in Notion and set its status line to `v1.0 — approved canon` when you're happy with it.
+You merge the proposal so other roles can see it. When you're happy with it, set its status line to `v1.0 — approved canon` (yourself, or by confirming in a session) in a PR, and merge that.
 
 ## 2. Design content (content developer)
 
@@ -54,15 +56,14 @@ Paste the approved text into the sheet. Asked to just write the room, it offers 
 
 ```
 /role content
-/lore-sync --check          # mirror stale? then /lore-sync first, in its own PR
 /aw-author starter_village commons
 ```
 
-It reads the Content Language spec from `.tools/spec/content-language/` (the pinned release, never syntax from memory), authors `content/starter_village/zones/commons.aw` from approved sheets, uses your text verbatim, and leaves `TODO(owner): <brief>` where you haven't written yet. `make check` runs lore-check, `content fmt --check`, compile, and validate. Anything the language can't express becomes a drafted `content-gap` issue on the server repo, created on your yes. It asks before pushing.
+It reads the Content Language spec from `.tools/spec/content-language/` (the pinned release, never syntax from memory), authors `content/starter_village/zones/commons.aw` from approved sheets, uses your text verbatim, and leaves `TODO(owner): <brief>` where you haven't written yet. `make check` runs the docs lint, `content fmt --check`, compile, and validate. Anything the language can't express becomes a drafted `content-gap` issue on the server repo, created on your yes. It asks before pushing.
 
 ## 5. Concept art with stand-ins (concept art)
 
-Once, set the style: `/house-style` walks the sections (rendering, value and colour, line, light, framing, how the world shows), gives options with a *learnability* note (what you could paint yourself soon), and drafts the house style page. When you approve, it bumps `HS v1` and prints a short block to paste into the ChatGPT project's instructions.
+Once, set the style: `/house-style` walks the sections (rendering, value and colour, line, light, framing, how the world shows), gives options with a *learnability* note (what you could paint yourself soon), and drafts `docs/art/house-style.md`. When you approve, it bumps `HS v1` and prints a short block to paste into the ChatGPT project's instructions.
 
 Each sheet:
 
@@ -73,8 +74,8 @@ Claude: CA-001 (HS v1). Axis: era layer. Four options A–D, each a copy-ready p
 You:    Here are the CA-001 images. [attach 4 files]
 Claude: art-review table → recommends A (iterate: "Same design. Change: …  Keep: …")
 You:    Select A.
-Claude: A = Selected — visual reference (HS v1). Upload CA-001-A.png to the ChatGPT
-        project files. Want to draw your own version? /concept-study CA-001 A
+Claude: A = Selected — visual reference (HS v1). All four images committed to
+        docs/art/img/ with the sheet. Upload CA-001-A.png to the ChatGPT project files. Want to draw your own version? /concept-study CA-001 A
 ```
 
 Later sheets that must match list `CA-001-A.png` as an attachment in every prompt. If *every* candidate drifts the same way, that's a house-style problem: `/house-style`, not prompt tweaks.

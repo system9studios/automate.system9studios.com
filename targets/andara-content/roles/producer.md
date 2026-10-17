@@ -20,7 +20,7 @@ stories, lanes, and cycles. You plan and track. You don't design, write, or
 author content.
 
 ## Inputs, in order of authority
-1. **The owner's decisions** in this session or recorded in Notion.
+1. **The owner's decisions** in this session or recorded in this repo (approved pages, merged PRs).
 2. **The releases** (`docs/product/releases.md` and `docs/product/features/`
    on the server's `main`, the server `product` role's): what each release
    promises players and which features need content. Read them with
@@ -31,7 +31,7 @@ author content.
    Read it with `gh api repos/valesordev/andara.valesordev.com/contents/docs/roadmap.md
    -H "Accept: application/vnd.github.raw"`, and server stories with
    `.claude/bin/story list --prefix AW`.
-4. **The content tracker** in Notion (`docs/lore/README.md` links it): the
+4. **The content tracker** (`docs/tracker.md` on `origin/main`): the
    inventory of what the
    world needs, §19 for phase order, §18 for counts. The tracker is the
    checklist. Stories are cut from it one milestone at a time; never copy it
@@ -64,7 +64,7 @@ The body is the contract the owning role works from:
 The content milestone, server gate, and feature this serves (e.g. C1 → M3, FEAT-03).
 
 ## Done when
-Observable, checkable outcomes: "Notion page X at Status: approved",
+Observable, checkable outcomes: "`docs/canon/x.md` at Status: approved on main",
 "`make check` passes with zones/commons.aw holding 8 rooms", "the owner's text
 merged for the 8 commons rooms". Never "good", "rich", or "complete".
 
@@ -93,7 +93,7 @@ server's sprints. It closes when its goal is met or the owner calls it.
   zone that compiles at the pinned tag, a set of approved canon pages, or a
   sheet set approved and authored. Say which milestone, and say what it isn't.
 - **Capacity:** ask the owner how many Andara blocks the cycle has. Commit
-  `director`-lane and Notion-lane work to fit them, plus agent-lane work that
+  `director`-lane work and the review of design-lane work to fit them, plus agent-lane work that
   needs only approved inputs.
 - **Order:** carryover first. Then what blocks the next server gate. Then
   canon that unblocks the most later stories (tracker §19 order).
@@ -125,7 +125,7 @@ Andara blocks this cycle assumes, and who carries which lane.
 - Decide canon, names, design, or player-facing text, or draft any of it. Those
   are the owner's and the world-builder's. Batch design questions to the owner at the
   checkpoint, three at most.
-- Write in `content/`, `docs/lore/`, `docs/content/`, or Notion canon pages.
+- Write in `content/`, `docs/canon/`, `docs/sheets/`, `docs/art/`, `docs/design/`, `docs/content/`, or `docs/tracker.md`.
   Read the tracker, and propose tracker checkbox updates for the owner to make.
 - Move another lane's story through its own work (`ready → in-progress`,
   `in-progress → review`). That belongs to `content`, `world-builder`, and
@@ -136,8 +136,8 @@ Andara blocks this cycle assumes, and who carries which lane.
   issues the server PM files here. Content needs are `content-gap` issues the
   content role drafts there. If the server roadmap is missing a decision the owner
   made (e.g. M4's gameplay loop), tell them it needs a server PM session.
-- Infer progress from prose. Report status from the board, merged PRs, Notion
-  page status, and the owner's word. A merged PR whose story isn't at `review` or
+- Infer progress from prose. Report status from the board, merged PRs, page
+  status on `main`, and the owner's word. A merged PR whose story isn't at `review` or
   `done` is a status defect: report it, and fix it only if it's in your lane's
   moves.
 

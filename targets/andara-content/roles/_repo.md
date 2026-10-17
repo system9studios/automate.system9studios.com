@@ -1,5 +1,5 @@
 ---
-generated: [docs/lore/README.md, .tools/, build/]
+generated: [.tools/, build/]
 check: make check
 project: Andara's World
 story_prefix: AWC
@@ -8,14 +8,16 @@ stories: github
 story_components: [CAN, DES, ART, TXT, PCK]
 ---
 Repo-wide role config for the Andara's World content repo. `generated` paths are
-never edited by hand: `docs/lore/README.md` is written by `lore-check --index`,
-`.tools/` by `make tools`, `build/` by `make compile`. Paths not in a role's
+never edited by hand: `.tools/` is written by `make tools`, `build/` by
+`make compile`. Paths not in a role's
 `writes` need the owner's approval (CLAUDE.md, Makefile, andara.ref, .claude/).
 
 Roles: `content` builds packs here. `producer` plans content cycles against the
-server's milestones and owns `docs/planning/`. `world-builder`, `concept-art`,
-and `writing-assistant` work in Notion from a session in this repo and own no
-paths. Their charters are the same ones the claude.ai Project uses. Run one role
+server's milestones and owns `docs/planning/`. This repo is authoritative for canon
+and design: `world-builder` owns `docs/canon/`, `concept-art` `docs/art/`,
+`game-designer` `docs/design/`, and `content` also `docs/sheets/`.
+`writing-assistant` reviews and owns no paths. `docs/tracker.md` is the
+owner's. Run one role
 per session (`/clear` before switching).
 
 ## Stories
@@ -28,7 +30,7 @@ from here. Change them only with `.claude/bin/story`.
 
   | Code | Component | Work | Usual lane |
   |---|---|---|---|
-  | `CAN` | `canon` | A canon proposal or amendment in Notion | `world-builder` |
+  | `CAN` | `canon` | A canon proposal or amendment in `docs/canon/` | `world-builder` |
   | `DES` | `design` | Content sheets (NPC, item, creature, zone, faction, hook) | `content` |
   | `ART` | `art` | Concept sheets and selections | `concept-art` |
   | `TXT` | `text` | Player-facing text | `director` |
@@ -44,7 +46,7 @@ from here. Change them only with `.claude/bin/story`.
 - Status: `draft → ready → in-progress → review → done` (or `blocked`). The
   producer creates and readies stories after the owner approves them at a cycle
   checkpoint, and closes them (`review → done`) on evidence: a merged PR, an
-  approved Notion page, or the owner's word for their own lane. A `content` story
+  page approved on `main`, or the owner's word for their own lane. A `content` story
   reaches `review` only when its PR merges: the story-merge Action
   (`.github/workflows/story-merge.yml`) applies the PR's `Story:` lines as its
   `role:` label.

@@ -14,8 +14,8 @@ Read `references/canon-rules.md` first. Assist level L2: you draft structure; th
 4. **Wire it.** Fill *Connections*: every NPC, faction, location, item, conflict, and mystery this touches, as links. When a link points at something that has no sheet yet, list it under *Missing sheets*.
 5. **Prose fields.** For each player-facing text the entity will need (short desc, long desc, greeting, barks, item text), write a *Writing brief* line: what the text must convey, which layer it may reveal, and register. Don't write the text.
 6. **Runtime notes.** How the entity maps to Content Language v1 (template, components, behaviors). Anything v1 can't express goes under *Language gaps*.
-7. **Write** to Notion under `Andara's World › Content › <Type>`, `**Status:** draft` (or `proposed` when no `[PROPOSED]` item blocks the owner's review).
+7. **Write** `docs/sheets/<type>/<slug>.md` (frontmatter `title`, `kind: sheet`) on a `content/sheets-<slug>` branch, `**Status:** draft` (or `proposed` when no `[PROPOSED]` item blocks the owner's review). Run `make check-lore`, commit, and push and open the PR only after the owner confirms.
 8. **Coverage.** Recount sheets by type against tracker §18 and report the table.
 
 ## Output
-Sheet URL, open `[PROPOSED]` decisions for the owner (batched, at most 5, most load-bearing first), missing sheets, language gaps, coverage table, one next action.
+Sheet path and PR URL (or "not pushed"), open `[PROPOSED]` decisions for the owner (batched, at most 5, most load-bearing first), missing sheets, language gaps, coverage table, one next action.

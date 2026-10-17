@@ -1,127 +1,181 @@
 #!/usr/bin/env python3
-"""Validate the Andara's World lore mirror (docs/lore/) and write its index.
+"""Validate Andara's World canon and design docs in the content repo, and list them.
 
 Source of truth: automate.system9studios.com / plugins/andaras-world/bin/lore-check.
 Vendored into target repos as .claude/bin/lore-check. Don't edit it there.
 
-    lore-check [--root <repo>]            validate; exit 1 on any problem
-    lore-check --index [--root <repo>]    (re)write docs/lore/README.md, then validate
+    lore-check [--root <repo>]                   validate; exit 1 on any problem
+    lore-check --list [--root <repo>]            print every page: kind, status, title, path
+    lore-check --changes <base> [--root <repo>]  print status changes since <base> (e.g. origin/main),
+                                                 marking approvals for the owner's review; then validate
 
-Each mirrored page is docs/lore/<kind>/<slug>.md with frontmatter:
-title, kind (canon|content-sheet|tracker), status, notion_url,
-notion_last_edited, synced_at. canon pages need "approved canon" in status,
-content sheets need "approved". /lore-sync writes these files; nobody else does.
+Where each kind lives (paths relative to docs/):
+
+    canon         canon/<slug>.md
+    tracker       tracker.md
+    sheet         sheets/<type>/<slug>.md
+    concept       art/CA-NNN-<slug>.md, images art/img/CA-NNN-<letter>.<ext> (Git LFS)
+    house-style   art/house-style.md
+    brief         design/briefs/<slug>.md
+
+Every page has frontmatter (title, kind) and its first body line is `**Status:** <state>`.
+`draft` and `proposed` are valid everywhere; the approved forms are per kind (APPROVED below).
+Only the owner sets an approved status; this tool can't tell who did, so --changes shows it.
 """
 from __future__ import annotations
 
 import re
 import subprocess
 import sys
-from datetime import datetime
 from pathlib import Path
 
-KINDS = {"canon", "content-sheet", "tracker"}
-REQUIRED = ("title", "kind", "status", "notion_url", "notion_last_edited", "synced_at")
-SLUG = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*\.md$")
-INDEX = "README.md"
+SHEET_TYPES = {"npc", "faction", "item", "creature", "conflict", "mystery", "hook", "zone"}
+SLUG = r"[a-z0-9]+(?:-[a-z0-9]+)*"
+LAYOUT = [  # (kind, pattern relative to docs/)
+    ("canon", re.compile(rf"^canon/{SLUG}\.md$")),
+    ("tracker", re.compile(r"^tracker\.md$")),
+    ("sheet", re.compile(rf"^sheets/({'|'.join(sorted(SHEET_TYPES))})/{SLUG}\.md$")),
+    ("house-style", re.compile(r"^art/house-style\.md$")),
+    ("concept", re.compile(rf"^art/CA-\d{{3}}-{SLUG}\.md$")),
+    ("brief", re.compile(rf"^design/briefs/{SLUG}\.md$")),
+]
+OWNED = ("canon/", "tracker.md", "sheets/", "art/", "design/")
+IMAGE = re.compile(r"^art/img/(CA-\d{3})-[A-Z]\.(png|jpe?g|webp)$")
+DASH = r"\s*[—–-]\s*"
+APPROVED = {
+    "canon": re.compile(rf"^v\d+\.\d+{DASH}approved canon\b", re.I),
+    "sheet": re.compile(r"^approved\b", re.I),
+    "brief": re.compile(r"^approved\b", re.I),
+    "house-style": re.compile(rf"^HS v\d+{DASH}approved\b", re.I),
+}
+OPEN = re.compile(r"^(draft|proposed)\b", re.I)
+STATUS = re.compile(r"^\*\*Status:\*\*\s*(.+?)\s*$")
 
 
-def frontmatter(text: str) -> dict | None:
+def parse(text: str) -> tuple[dict | None, str | None]:
+    """Frontmatter dict and the status from the first body line, or None for either."""
     if not text.startswith("---\n"):
-        return None
+        return None, None
     end = text.find("\n---\n", 4)
     if end < 0:
-        return None
+        return None, None
     meta = {}
     for line in text[4:end].splitlines():
         if ":" in line:
             k, v = line.split(":", 1)
             meta[k.strip()] = v.strip().strip("'\"")
-    return meta
+    body = [l for l in text[end + 5:].splitlines() if l.strip()]
+    m = STATUS.match(body[0]) if body else None
+    return meta, (m.group(1) if m else None)
 
 
-def iso(v: str) -> bool:
-    try:
-        datetime.fromisoformat(v.replace("Z", "+00:00"))
-        return True
-    except ValueError:
-        return False
+def kind_of(rel: str) -> str | None:
+    return next((k for k, pat in LAYOUT if pat.match(rel)), None)
 
 
-def check(lore: Path) -> tuple[list[str], list[tuple[str, dict]]]:
+def approved(kind: str, status: str) -> bool:
+    return kind in APPROVED and bool(APPROVED[kind].match(status))
+
+
+def check(docs: Path) -> tuple[list[str], list[tuple[str, str, dict, str]]]:
     problems, pages = [], []
-    if not lore.is_dir():
-        return [f"{lore} does not exist (run /lore-sync)"], pages
-    for f in sorted(lore.rglob("*.md")):
-        rel = f.relative_to(lore).as_posix()
-        if rel == INDEX:
+    if (docs / "lore").exists():
+        problems.append("docs/lore/ is retired: canon lives in docs/canon/, the tracker in docs/tracker.md")
+    if not docs.is_dir():
+        return problems, pages
+    concepts = set()
+    for f in sorted(docs.rglob("*")):
+        if not f.is_file():
             continue
-        parts = rel.split("/")
-        if len(parts) != 2 or parts[0] not in KINDS:
-            problems.append(f"{rel}: must be <kind>/<slug>.md with kind in {sorted(KINDS)}")
+        rel = f.relative_to(docs).as_posix()
+        if not rel.startswith(OWNED) or IMAGE.match(rel) or rel.startswith("art/img/"):
             continue
-        if not SLUG.match(parts[1]):
-            problems.append(f"{rel}: slug must be kebab-case")
-        meta = frontmatter(f.read_text())
+        kind = kind_of(rel)
+        if kind is None:
+            problems.append(f"docs/{rel}: not a known place (see lore-check --help for the layout; slugs are kebab-case)")
+            continue
+        meta, status = parse(f.read_text())
         if meta is None:
-            problems.append(f"{rel}: missing frontmatter")
+            problems.append(f"docs/{rel}: missing frontmatter (title, kind)")
             continue
-        missing = [k for k in REQUIRED if not meta.get(k)]
+        missing = [k for k in ("title", "kind") if not meta.get(k)]
         if missing:
-            problems.append(f"{rel}: missing {', '.join(missing)}")
+            problems.append(f"docs/{rel}: frontmatter missing {', '.join(missing)}")
             continue
-        if meta["kind"] != parts[0]:
-            problems.append(f"{rel}: kind '{meta['kind']}' doesn't match directory '{parts[0]}'")
-        st = meta["status"].lower()
-        if meta["kind"] == "canon" and "approved canon" not in st:
-            problems.append(f"{rel}: canon page isn't approved (status: {meta['status']})")
-        if meta["kind"] == "content-sheet" and "approved" not in st:
-            problems.append(f"{rel}: content sheet isn't approved (status: {meta['status']})")
-        for k in ("notion_last_edited", "synced_at"):
-            if not iso(meta[k]):
-                problems.append(f"{rel}: {k} isn't ISO-8601")
-        if not meta["notion_url"].startswith("https://"):
-            problems.append(f"{rel}: notion_url isn't a URL")
-        pages.append((rel, meta))
-    idx = lore / INDEX
-    if pages and (not idx.is_file() or idx.read_text() != render_index(pages)):
-        problems.append(f"{INDEX} is stale (run lore-check --index)")
+        if meta["kind"] != kind:
+            problems.append(f"docs/{rel}: kind '{meta['kind']}' should be '{kind}' here")
+        if status is None:
+            problems.append(f"docs/{rel}: first line after the frontmatter must be **Status:** <state>")
+            continue
+        if kind != "tracker" and not (OPEN.match(status) or approved(kind, status)):
+            problems.append(f"docs/{rel}: status '{status}' isn't draft, proposed, or this kind's approved form")
+        if kind == "concept":
+            concepts.add(rel.split("/")[1][:6])
+        pages.append((f"docs/{rel}", kind, meta, status))
+    img = docs / "art/img"
+    if img.is_dir():
+        for f in sorted(p for p in img.rglob("*") if p.is_file()):
+            rel = f.relative_to(docs).as_posix()
+            m = IMAGE.match(rel)
+            if not m:
+                problems.append(f"docs/{rel}: images are art/img/CA-NNN-<letter>.png|jpg|webp")
+            elif m.group(1) not in concepts:
+                problems.append(f"docs/{rel}: no concept sheet {m.group(1)}-<slug>.md")
     return problems, pages
 
 
-def render_index(pages: list[tuple[str, dict]]) -> str:
-    out = ["# Lore mirror", "",
-           "Read-only mirror of approved Andara's World pages in Notion. Written by",
-           "`/lore-sync`; never hand-edit. Notion is authoritative.", ""]
-    for kind in ("canon", "tracker", "content-sheet"):
-        rows = [(r, m) for r, m in pages if m["kind"] == kind]
-        if not rows:
+def git(root: Path, *args: str) -> str:
+    return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True, check=True).stdout
+
+
+def changes(root: Path, base: str) -> list[str]:
+    out = []
+    names = git(root, "diff", "--name-status", "--no-renames", f"{base}...HEAD", "--", "docs").splitlines()
+    for line in names:
+        st, path = line.split("\t", 1)
+        rel = path.removeprefix("docs/")
+        kind = kind_of(rel)
+        if kind is None:
             continue
-        out += [f"## {kind}", "", "| Page | Status | Notion edited |", "|---|---|---|"]
-        out += [f"| [{m['title']}]({r}) | {m['status']} | {m['notion_last_edited']} |" for r, m in rows]
-        out.append("")
-    return "\n".join(out)
+        old = new = None
+        if st != "A":
+            old = parse(git(root, "show", f"{base}:{path}"))[1]
+        if st != "D":
+            new = parse((root / path).read_text())[1]
+        if old == new:
+            continue
+        mark = "APPROVAL " if new and approved(kind, new) else ""
+        out.append(f"{mark}{path}: {old or '(new)'} → {new or '(deleted)'}")
+    return out
 
 
 def repo_root() -> Path:
     try:
-        return Path(subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True,
-                                   text=True, check=True).stdout.strip())
+        return Path(git(Path.cwd(), "rev-parse", "--show-toplevel").strip())
     except (subprocess.CalledProcessError, FileNotFoundError):
         return Path.cwd()
 
 
 def main(argv: list[str]) -> int:
+    if "--help" in argv or "-h" in argv:
+        print(__doc__)
+        return 0
     root = Path(argv[argv.index("--root") + 1]) if "--root" in argv else repo_root()
-    lore = root / "docs" / "lore"
-    if "--index" in argv:
-        _, pages = check(lore)
-        if pages:
-            (lore / INDEX).write_text(render_index(pages))
-    problems, pages = check(lore)
+    problems, pages = check(root / "docs")
+    if "--list" in argv:
+        print("| Kind | Status | Title | Path |\n|---|---|---|---|")
+        for path, kind, meta, status in sorted(pages, key=lambda p: (p[1], p[0])):
+            print(f"| {kind} | {status} | {meta['title']} | {path} |")
+    if "--changes" in argv:
+        base = argv[argv.index("--changes") + 1]
+        try:
+            for line in changes(root, base):
+                print(f"lore-check: {line}")
+        except subprocess.CalledProcessError as e:
+            problems.append(f"--changes {base}: {e.stderr.strip()}")
     for p in problems:
         print(f"lore-check: {p}", file=sys.stderr)
-    if not problems:
+    if not problems and "--list" not in argv:
         print(f"lore-check: {len(pages)} pages ok")
     return 1 if problems else 0
 

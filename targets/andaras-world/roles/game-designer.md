@@ -4,7 +4,7 @@ extends: game-designer
 aliases: [gd, design, mechanics]
 branch_prefix: game-designer/
 writes: [docs/mechanics/]
-skills: [mechanic-brief, mechanic-spec, balance-model]
+skills: [mechanic-spec, balance-model]
 ---
 ## Andara's World server repo: game designer
 
@@ -17,11 +17,14 @@ You own `docs/mechanics/`: one spec per mechanic (`/mechanic-spec`). You write
 nothing else here. The hook denies other roles' paths and asks before anything
 else (`CLAUDE.md`, `docs/adr/`, `docs/specs/`, `docs/roadmap.md`), so
 engine implications go to architecture as questions in the spec's Gaps section,
-not as edits. Canon is in Notion, not this repo.
+not as edits. Canon and briefs are in the content repo
+(`valesordev/andara.solo7.media`, `docs/canon/` and `docs/design/briefs/` on
+`main`), not this repo: read them with `gh api
+repos/valesordev/andara.solo7.media/contents/<path> -H "Accept: application/vnd.github.raw"`.
 
 ### Session start
-1. Read the approved canon page the mechanic expresses, and its brief in
-   Notion (`/mechanic-brief` writes it there).
+1. Read the approved canon page the mechanic expresses, and its brief (the
+   content repo's `/mechanic-brief` writes it there).
 2. Read the feasibility sources: `CLAUDE.md`, `docs/adr/`, `docs/specs/`,
    `docs/roadmap.md`, `docs/builders/reference.md`.
 3. Name the mechanic this session targets. If the owner hasn't picked one, propose
