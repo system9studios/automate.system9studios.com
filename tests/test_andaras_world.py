@@ -54,7 +54,7 @@ class StructureTest(unittest.TestCase):
             self.assertTrue((s / "references/examples.md").is_file(), s.name)
 
 
-    def test_notion_role_charters_are_shared_with_agents(self):
+    def test_design_role_charters_are_shared_with_agents(self):
         roles = sorted(p.stem for p in (PLUGIN / "roles").glob("*.md"))
         self.assertEqual(roles, ["concept-art", "content-developer", "world-builder", "writing-assistant"])
         for n in ("world-builder", "concept-art", "writing-assistant"):
@@ -81,7 +81,7 @@ class StructureTest(unittest.TestCase):
             t = f.read_text()
             self.assertIn("## Refinement issues", t, f)
             self.assertIn("system9studios/automate.system9studios.com", t, f)
-        self.assertIn("{{include shared/refinement.md}}", (PLUGIN / "instructions/project.md").read_text())
+        self.assertFalse((PLUGIN / "instructions").exists())  # the claude.ai Project is retired
 
     def test_concept_workflow_skills_cross_reference(self):
         sheet = (PLUGIN / "skills/concept-sheet/SKILL.md").read_text()
@@ -121,9 +121,14 @@ class ContentRoleTest(unittest.TestCase):
 
     def test_scaffold_and_vendored_files(self):
         for rel in ("CLAUDE.md", "Makefile", "andara.ref", "docs/glossary.md", "content/.gitkeep",
-                    "world-foundation.md", ".claude/bin/lore-check", ".claude/skills/aw-author/SKILL.md",
-                    ".claude/skills/lore-sync/SKILL.md", ".claude/roles/content.md"):
+                    "world-foundation.md", ".gitattributes", ".claude/bin/lore-check",
+                    ".claude/skills/aw-author/SKILL.md", ".claude/roles/content.md"):
             self.assertTrue((self.repo / rel).is_file(), rel)
+        self.assertFalse((self.repo / ".claude/skills/lore-sync").exists())
+        self.assertIn("docs/art/img/** filter=lfs", (self.repo / ".gitattributes").read_text())
+        claude = (self.repo / "CLAUDE.md").read_text()
+        self.assertNotIn("Notion", claude)
+        self.assertNotIn("docs/lore", claude)
         self.assertEqual(sorted(p.stem for p in (self.repo / ".claude/roles").glob("*.md")),
                          ["_repo", "concept-art", "content", "game-designer", "producer",
                           "world-builder", "writing-assistant"])
@@ -159,28 +164,35 @@ class ContentRoleTest(unittest.TestCase):
         self.assertIn("andara.solo7.media", charter)
         self.assertLess(charter.index("# Role: CONTENT"), charter.index("## Andara's World content repo"))
 
-    def test_notion_roles_compose_base_and_own_nothing(self):
+    # Each design role owns its docs/ area and nothing else; the tracker is the owner's.
+    OWN = {"world-builder": "docs/canon/x.md", "concept-art": "docs/art/CA-001-gate.md",
+           "game-designer": "docs/design/briefs/x.md", "content": "docs/sheets/npc/x.md"}
+
+    def test_design_roles_compose_base_and_own_their_docs(self):
         for name, alias, title, skills in (
                 ("world-builder", "wb", "WORLD BUILDER", "/canon-proposal /canon-check"),
                 ("concept-art", "ca", "CONCEPT ART",
                  "/concept-sheet /house-style /art-review /concept-study /canon-check"),
-                ("writing-assistant", "writing", "WRITING ASSISTANT", "/line-edit /canon-check")):
+                ("writing-assistant", "writing", "WRITING ASSISTANT", "/line-edit /canon-check"),
+                ("game-designer", "gd", "GAME DESIGNER", "/mechanic-brief /balance-model")):
             with self.subTest(role=name):
                 charter = self.as_role(alias)
                 self.assertIn(f"Active role: {name}", charter)
                 self.assertRegex(charter, r"(?m)^Assist level: L[0-3] — ")
                 self.assertIn("## Canon rules", charter)
                 self.assertIn(f"Role skills: {skills}\n", charter)
-                self.assertIn("doesn't commit, push, or open PRs", charter)
-                for line in ("Branch prefix:", "PR label:", "Review gate:"):
-                    self.assertNotIn(line, charter.split("\n\n", 1)[0])
+                self.assertNotIn("Notion", charter)
+                self.assertNotIn("docs/lore", charter)
                 self.assertLess(charter.index(f"# Role: {title}"),
                                 charter.index("## Andara's World content repo"))
-                for rel in ("content/starter_village/zones/commons.aw", "docs/lore/canon/x.md",
-                            "docs/content/starter_village.md", "docs/glossary.md",
-                            "docs/lore/README.md"):
+                for owner, rel in self.OWN.items():
+                    self.assertEqual(self.decision(rel), "allow" if owner == name else "deny", (name, rel))
+                for rel in ("content/starter_village/zones/commons.aw", "docs/content/starter_village.md",
+                            "docs/glossary.md", "docs/planning/roadmap.md"):
                     self.assertEqual(self.decision(rel), "deny", (name, rel))
+                self.assertEqual(self.decision("docs/tracker.md"), "ask", name)
                 self.assertEqual(self.decision("Makefile"), "ask", name)
+        self.assertIn("doesn't commit, push, or open PRs", self.as_role("writing-assistant"))
 
     def test_producer_owns_planning_only(self):
         charter = self.as_role("prod")
@@ -191,23 +203,28 @@ class ContentRoleTest(unittest.TestCase):
         self.assertEqual(self.decision("docs/planning/roadmap.md"), "allow")
         self.assertEqual(self.decision("docs/planning/cycles/CYCLE-01.md"), "allow")
         for rel in ("content/starter_village/zones/commons.aw", "docs/content/starter_village.md",
-                    "docs/lore/canon/x.md"):
+                    "docs/canon/x.md", "docs/sheets/npc/x.md"):
             self.assertEqual(self.decision(rel), "deny", rel)
+        self.assertEqual(self.decision("docs/tracker.md"), "ask")
         self.as_role("content")
         self.assertEqual(self.decision("docs/planning/roadmap.md"), "deny")
 
     def test_lanes_get_story_moves(self):
         for name in ("content", "world-builder", "concept-art"):
-            self.assertIn("ready>in-progress@lane", self.as_role(name), name)
+            charter = self.as_role(name)
+            moves = re.search(r"(?m)^Story moves .*$", charter).group(0)
+            self.assertIn("ready>in-progress@lane", moves, name)
+            self.assertNotIn("in-progress>review@lane", moves, name)   # only when the PR merges
+            self.assertRegex(charter, r"(?m)^On merge .*in-progress>review@lane", name)
         self.assertNotIn("Story moves", self.as_role("writing-assistant"))
 
     def test_content_ownership(self):
         self.as_role("content")
         self.assertEqual(self.decision("content/starter_village/zones/commons.aw"), "allow")
-        self.assertEqual(self.decision("docs/lore/canon/world-foundation.md"), "allow")
+        self.assertEqual(self.decision("docs/sheets/npc/militia-commander.md"), "allow")
         self.assertEqual(self.decision("docs/content/starter_village.md"), "allow")
         self.assertEqual(self.decision("docs/glossary.md"), "allow")
-        self.assertEqual(self.decision("docs/lore/README.md"), "deny")   # generated by lore-check
+        self.assertEqual(self.decision("docs/canon/world-foundation.md"), "deny")
         self.assertEqual(self.decision("build/starter_village/x.json"), "deny")
         self.assertEqual(self.decision("andara.ref"), "ask")
         self.assertEqual(self.decision("Makefile"), "ask")
@@ -253,11 +270,9 @@ class ServerTargetTest(unittest.TestCase):
 PAGE = """---
 title: {title}
 kind: {kind}
-status: {status}
-notion_url: https://app.notion.com/p/abc
-notion_last_edited: 2026-09-27T07:31:13Z
-synced_at: 2026-09-28T19:00:00Z
 ---
+**Status:** {status}
+
 body
 """
 
@@ -266,41 +281,76 @@ class LoreCheckTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
-        self.lore = self.root / "docs/lore"
+        self.docs = self.root / "docs"
         self.bin = str(PLUGIN / "bin/lore-check")
 
     def tearDown(self):
         self.tmp.cleanup()
 
     def page(self, rel, **kw):
-        p = self.lore / rel
+        p = self.docs / rel
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(PAGE.format(**kw))
 
     def check(self, *flags):
         return run(sys.executable, self.bin, *flags, "--root", str(self.root))
 
-    def test_valid_mirror_passes_after_index(self):
-        self.page("canon/cosmology-the-awakening.md", title="Cosmology", kind="canon",
-                  status="v1.0 — approved canon")
-        self.page("tracker/content-development-tracker.md", title="Tracker", kind="tracker",
-                  status="Early Development")
-        self.assertEqual(self.check().returncode, 1)  # no index yet
-        r = self.check("--index")
+    def test_every_kind_in_its_place_passes_and_lists(self):
+        self.page("canon/portals.md", title="Portals", kind="canon", status="v1.0 — approved canon")
+        self.page("canon/eras.md", title="Eras", kind="canon", status="v1.0 - approved canon")
+        self.page("canon/gates.md", title="Gates", kind="canon", status="proposed")
+        self.page("tracker.md", title="Tracker", kind="tracker", status="Early Development")
+        self.page("sheets/npc/militia-commander.md", title="Commander", kind="sheet", status="approved")
+        self.page("art/house-style.md", title="House style", kind="house-style", status="HS v1 — approved")
+        self.page("art/CA-001-gate.md", title="Gate", kind="concept", status="draft")
+        self.page("design/briefs/cast-strain.md", title="Strain", kind="brief", status="draft")
+        (self.docs / "art/img").mkdir()
+        (self.docs / "art/img/CA-001-A.png").write_bytes(b"lfs pointer")
+        (self.docs / "glossary.md").write_text("# Glossary\n")   # not a managed page
+        r = self.check()
         self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertIn("cosmology-the-awakening.md", (self.lore / "README.md").read_text())
+        self.assertIn("8 pages ok", r.stdout)
+        listing = self.check("--list").stdout
+        self.assertIn("| canon | v1.0 — approved canon | Portals | docs/canon/portals.md |", listing)
+        self.assertIn("| brief | draft | Strain | docs/design/briefs/cast-strain.md |", listing)
 
-    def test_rejects_unapproved_and_misplaced(self):
+    def test_empty_repo_passes(self):
+        self.assertEqual(self.check().returncode, 0)
+
+    def test_rejects_bad_layout_kind_status_and_images(self):
+        self.page("canon/Bad Name.md", title="Y", kind="canon", status="draft")
+        self.page("canon/x.md", title="X", kind="sheet", status="draft")
+        self.page("canon/y.md", title="Y", kind="canon", status="approved")     # not the canon form
+        self.page("sheets/spaceship/z.md", title="Z", kind="sheet", status="draft")
+        (self.docs / "canon/no-status.md").write_text("---\ntitle: N\nkind: canon\n---\nbody\n")
+        (self.docs / "art/img").mkdir(parents=True)
+        (self.docs / "art/img/CA-002-A.png").write_bytes(b"x")
+        (self.docs / "art/img/gate.png").write_bytes(b"x")
+        (self.docs / "lore/canon").mkdir(parents=True)
+        err = self.check().stderr
+        for msg in ("docs/canon/Bad Name.md: not a known place", "kind 'sheet' should be 'canon'",
+                    "status 'approved' isn't", "docs/sheets/spaceship/z.md: not a known place",
+                    "must be **Status:**", "no concept sheet CA-002", "images are art/img/",
+                    "docs/lore/ is retired"):
+            self.assertIn(msg, err)
+
+    def test_changes_marks_approvals(self):
+        run("git", "init", "-q", cwd=self.root)
+        git = lambda *a: run("git", "-c", "user.name=t", "-c", "user.email=t@example.com",
+                             "-c", "commit.gpgsign=false", *a, cwd=self.root)
         self.page("canon/portals.md", title="Portals", kind="canon", status="proposed")
-        self.page("content-sheet/npc-x.md", title="X", kind="canon", status="approved")
-        self.page("misc/Bad Name.md", title="Y", kind="canon", status="approved canon")
-        err = self.check("--index").stderr
-        self.assertIn("canon page isn't approved", err)
-        self.assertIn("doesn't match directory", err)
-        self.assertIn("must be <kind>/<slug>.md", err)
-
-    def test_missing_mirror_fails(self):
-        self.assertEqual(self.check().returncode, 1)
+        self.page("canon/gates.md", title="Gates", kind="canon", status="draft")
+        git("add", "-A"); git("commit", "-qm", "base")
+        base = git("rev-parse", "HEAD").stdout.strip()
+        self.page("canon/portals.md", title="Portals", kind="canon", status="v1.0 — approved canon")
+        self.page("canon/gates.md", title="Gates", kind="canon", status="proposed")
+        self.page("canon/new.md", title="New", kind="canon", status="draft")
+        git("add", "-A"); git("commit", "-qm", "change")
+        r = self.check("--changes", base)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("APPROVAL docs/canon/portals.md: proposed → v1.0 — approved canon", r.stdout)
+        self.assertIn("lore-check: docs/canon/gates.md: draft → proposed", r.stdout)
+        self.assertIn("docs/canon/new.md: (new) → draft", r.stdout)
 
 
 if __name__ == "__main__":

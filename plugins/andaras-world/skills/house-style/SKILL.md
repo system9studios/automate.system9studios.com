@@ -8,7 +8,7 @@ description: Develop, revise, or export Andara's World's concept-art house style
 Read `references/canon-rules.md` first. The house style is **art direction: the owner's decision.** You frame options, explain trade-offs, and draft; they pick. Nothing is approved until they say so.
 
 ## Where it lives
-- **Notion** `Andara's World › Concept Art › House Style` is authoritative, with `**Status:** draft | proposed | HS vN — approved` and a changelog.
+- **`docs/art/house-style.md`** in the content repo (frontmatter `title`, `kind: house-style`) is authoritative, with `**Status:** draft | proposed | HS vN — approved` and a changelog. Edit it on an `art/house-style-<slug>` branch; push and open the PR only after the owner confirms.
 - **ChatGPT project instructions** are a rendered copy (`references/chatgpt-project.md` format). The owner pastes them; they never edit them in ChatGPT directly, or the two drift.
 
 ## Develop or revise

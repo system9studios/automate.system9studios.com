@@ -11,7 +11,7 @@ Claude Code agent configuration for System 9 Studios: a plugin marketplace (`sys
 | `targets/` | `andaras-world` (the game server repo) and `andara-content` (the content repo): which plugins each vendors, role files, permissions, `main` rulesets. |
 | `scaffolds/andara-content/` | The starting point for a content repo. |
 
-**No setting content.** The world itself (canon, terminology, tone, places, the content tracker) lives in the owner's Notion and the content repo's `docs/lore/` mirror. Agents read it at runtime; this repo holds only the process around it, and `tests/test_targets.py` checks that it stays that way.
+**No setting content.** The world itself (canon, terminology, tone, places, the content tracker) lives in the private content repo. Agents read it at runtime; this repo holds only the process around it, and `tests/test_targets.py` checks that it stays that way.
 
 ## Use
 

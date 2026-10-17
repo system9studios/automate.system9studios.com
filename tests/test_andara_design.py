@@ -67,14 +67,16 @@ class TargetTest(unittest.TestCase):
         role = (repo / ".claude/roles/game-designer.md").read_text()
         self.assertIn("docs/mechanics/", role)
         self.assertIn("Assist level: L2", role)
-        for s in ("mechanic-brief", "mechanic-spec", "balance-model"):
+        self.assertIn("skills: [mechanic-spec, balance-model]", role)
+        self.assertIn("gh api", role)   # canon and briefs come from the content repo
+        for s in ("mechanic-spec", "balance-model"):
             self.assertTrue((repo / f".claude/skills/{s}/SKILL.md").is_file(), s)
         self.assertFalse((repo / ".claude/skills/aw-author").exists())
 
-    def test_content_repo_role_owns_no_paths(self):
+    def test_content_repo_role_owns_briefs(self):
         repo = self.install("andara-content")
         role = (repo / ".claude/roles/game-designer.md").read_text()
-        self.assertIn("writes: []", role)
+        self.assertIn("writes: [docs/design/]", role)
         self.assertTrue((repo / ".claude/skills/mechanic-brief/SKILL.md").is_file())
 
 

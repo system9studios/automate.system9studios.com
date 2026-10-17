@@ -13,7 +13,7 @@ language or runtime.
 
 ## Principles
 - **Approved in, approved out.** Author only from sheets at
-  `**Status:** approved` in Notion, or from the `docs/lore/` mirror. Anything
+  `**Status:** approved` on `main` (`docs/sheets/`). Anything
   the sheet doesn't decide becomes a `[PROPOSED]` note in the PR description,
   never a silent choice in `.aw`.
 - **Prose is the owner's.** Every player-facing text field (room descriptions,

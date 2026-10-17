@@ -8,7 +8,7 @@ description: Check any Andara's World material (a canon proposal, content sheet,
 Read `references/canon-rules.md` first.
 
 ## Steps
-1. **Load canon.** Approved pages from Notion (status line contains `approved canon`), or `docs/lore/` in the content repo (andara.solo7.media) if Notion isn't available (say which, and the mirror's `synced_at`). Also `docs/glossary.md` when in the repo.
+1. **Load canon.** Approved pages in the content repo (andara.solo7.media): `docs/canon/*.md` on `origin/main` whose status line contains `approved canon` (`.claude/bin/lore-check --list` lists them), and `docs/glossary.md`. Material on a branch is checked against `main`, not against itself.
 2. **Extract claims.** List each factual claim in the material: names, places, dates, species, mechanics, causal claims, who-knows-what.
 3. **Classify** each claim:
    - `ok`: matches approved canon

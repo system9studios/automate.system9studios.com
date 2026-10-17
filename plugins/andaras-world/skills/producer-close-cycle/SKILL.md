@@ -1,6 +1,6 @@
 ---
 name: producer-close-cycle
-description: Close out the active Andara's World content cycle in the content repo (andara.solo7.media) and plan the next one in the same PR. Records each story's final state with its evidence (merged PR, approved Notion page, the owner's word), checks the goal was actually met, closes verified stories, then plans CYCLE-NN+1 with the shared planning procedure. Trigger on "/producer-close-cycle", "close out the content cycle", "wrap this cycle". Requires the content repo and the producer role. Not for starting a cycle when none is active (producer-start-cycle), or server sprints (pm-close-sprint).
+description: Close out the active Andara's World content cycle in the content repo (andara.solo7.media) and plan the next one in the same PR. Records each story's final state with its evidence (merged PR, approved page on main, the owner's word), checks the goal was actually met, closes verified stories, then plans CYCLE-NN+1 with the shared planning procedure. Trigger on "/producer-close-cycle", "close out the content cycle", "wrap this cycle". Requires the content repo and the producer role. Not for starting a cycle when none is active (producer-start-cycle), or server sprints (pm-close-sprint).
 disable-model-invocation: true
 allowed-tools: Bash(.claude/bin/role:*) Bash(.claude/bin/sprint-state:*) Bash(.claude/bin/story list:*) Bash(.claude/bin/story show:*)
 ---
@@ -32,8 +32,8 @@ allowed-tools: Bash(.claude/bin/role:*) Bash(.claude/bin/sprint-state:*) Bash(.c
 1. **Evidence, story by story.** Gather it from:
    - `content` lane: the merged PR (`gh pr list --state merged --search "<ID>"`)
      and `make check` green on `origin/main`
-   - `world-builder` and `concept-art`: the Notion page's `Status` (approved,
-     or selected), linked in the story's review note
+   - `world-builder`, `concept-art`, and `game-designer`: the page's status on
+     `origin/main` (approved, or the candidates selected), and the PR that set it
    - `director` lane: ask the owner, and quote their answer
    A story at `review` with evidence gets `story status <ID> done --note <evidence>`.
    A story without evidence stays where it is and is carryover.
@@ -45,7 +45,7 @@ allowed-tools: Bash(.claude/bin/role:*) Bash(.claude/bin/sprint-state:*) Bash(.c
    - each story's final status and evidence
    - carryover: stories not `done`, and why (blocker, PR, question), not a guess
    - status defects: merged work whose story is behind, or the reverse
-   - tracker updates for the owner to tick in Notion (you don't edit the tracker)
+   - tracker updates for the owner to tick in `docs/tracker.md` (you don't edit the tracker)
    - set the header to `Status: closed`
 4. **Triage** `content-need` issues opened here and `content-gap` issues the
    content role filed on the server during NN: which are now served or shipped,

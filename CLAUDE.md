@@ -11,7 +11,7 @@ Help the owner move projects forward, build lasting skills while doing it, and u
 - **This repo**: everything agents execute, and how to use it. `docs/` is authoritative for usage (where agents run, setup, the role catalog, workflows), with the reference beside the code (each plugin's `README.md`). It is public: no secrets, no personal names (say "the owner"), no private Notion links, no machine-specific paths. `make check-public` enforces it (Notion links, the owner's denylist, gitleaks over the whole history, the setting-term guard), and CI runs it on every PR and push to `main`.
 - **Direction** (rationale, roadmap, decision log) is the owner's, kept privately. Nothing here depends on it: a doc that needs a decision states the decision.
 - **Docs site.** `make docs-export SITE=<sites monorepo>` writes `docs/` to its `content/automate.system9studios.com/`; the site build and deploy live there. Change a usage doc here in the same PR as the behavior it describes.
-- **No setting content.** Canon (terminology and its register, tone guardrails, named places, factions, people, history), the content tracker, and Notion page titles live in the owner's Notion and the content repo's `docs/lore/` mirror. Agents read them at runtime (`shared/andara-canon.md` says how). Process rules (status line, `[PROPOSED]`, revisions, the information-hierarchy mechanism, tracker discipline, handoffs) live here. Examples use stand-ins, never real canon. `tests/test_targets.py` fails on known setting terms (stored hashed) and private Notion links, across `docs/` too.
+- **No setting content.** Canon (terminology and its register, tone guardrails, named places, factions, people, history), the content tracker, sheets, concept art, and briefs live in the private content repo, which is authoritative. Agents read and write them there (`shared/andara-canon.md` says how). Process rules (status line, `[PROPOSED]`, revisions, the information-hierarchy mechanism, tracker discipline, handoffs, the docs layout `lore-check` enforces) live here. Examples use stand-ins, never real canon. `tests/test_targets.py` fails on known setting terms (stored hashed) and private Notion links, across `docs/` too.
 - **automate.valesordev.com** (pinned in `deps.json`): the toolkit and the `valesor-dev` plugin both Andara targets vendor. Dependencies run one way, here → V. A `valesor-dev` change is made there, tagged, and pinned here with `make pin DEP=valesordev REF=<tag>`.
 
 ## Repository layout
@@ -21,11 +21,11 @@ Help the owner move projects forward, build lasting skills while doing it, and u
 ├── .claude-plugin/marketplace.json   # marketplace "system9studios"
 ├── CLAUDE.md                         # this file
 ├── docs/                             # usage docs: getting started, role catalog, workflows (exported to the docs site)
-├── Makefile                          # deps / pin / validate / check-public / tools / test / build / package / install / check-target / docs-export / scaffold
+├── Makefile                          # deps / pin / validate / check-public / tools / test / build / install / check-target / docs-export / scaffold
 ├── deps.json                         # pins automate.valesordev.com; `make deps` → .deps/valesordev/ (gitignored)
 ├── shared/                           # andara-canon, andara-<role> charters, study-brief: inlined by `make build`
 ├── plugins/
-│   ├── andaras-world/                # agents, base roles, skills, bin/lore-check, src/, instructions/
+│   ├── andaras-world/                # agents, base roles, skills, bin/lore-check, src/
 │   └── andara-design/                # game-designer base role, mechanic skills, src/
 ├── targets/
 │   ├── andaras-world/                # the game server repo (valesordev/andara.valesordev.com); migrations/
@@ -44,15 +44,13 @@ Plugins load in place, so nothing expands `{{include}}` at load time. A file tha
 |---|---|
 | Claude Code in an Andara repo (local **and cloud**) | `make install TARGET=<t> DEST=<repo>` vendors into the repo's `.claude/`, and you commit it there. |
 | Claude Code outside those repos, Cowork | `make dev` registers this checkout as a marketplace; install plugins from it. |
-| claude.ai Project | `make package` renders `instructions/project.md` and zips the skills changed since `make package-done`; upload is manual. |
 
 Cloud sessions don't load plugins, so vendoring is the rule in the Andara repos. Don't also install a vendored plugin locally, or its skills and hooks run twice. Roles, `/role`, hooks, lanes, and the coordinator are `valesor-dev`'s: see its README in automate.valesordev.com.
 
 ### The Andara boundary
 
 - **Server repo** `valesordev/andara.valesordev.com` (target `andaras-world`): engine, Content Language, `andara-cli`, and test content only. Its own `CLAUDE.md` (architecture, milestones, §-numbered rules) stays there.
-- **Content repo** `valesordev/andara.solo7.media` (target `andara-content`): Builder packs, the `docs/lore/` mirror, content docs. Packs compile with the `andara-cli` release pinned in its `andara.ref`. Language and runtime gaps go to the server as `content-gap` issues; the server PM files `content-need` issues there.
-- **Notion**: canon, authoritative. The content repo's `CLAUDE.md` names the canon root (`Canon root:`), which `/lore-sync` walks.
+- **Content repo** `valesordev/andara.solo7.media` (target `andara-content`, private): canon and design docs (authoritative: `docs/canon/`, `docs/tracker.md`, `docs/sheets/`, `docs/art/`, `docs/design/`), Builder packs, content docs. Packs compile with the `andara-cli` release pinned in its `andara.ref`. Language and runtime gaps go to the server as `content-gap` issues; the server PM files `content-need` issues there.
 - Concept studies go to the owner's Creative Coach through `shared/study-brief.md`: Andara decides *what*, the coach decides *how*.
 
 ## Doctrine (applies to every agent)
@@ -70,7 +68,7 @@ Rules:
 
 - Creative roles never produce the artifact (player-facing prose, a canon decision) above their level, even on a casual ask. Offer the level-appropriate alternative. The owner can explicitly override for one piece.
 - Sessions end with one concrete next action, sized for a Kanban pull (no invented due dates).
-- Irreversible or outward-facing actions (pushes to shared remotes, publishing a Notion page, opening issues) require confirmation.
+- Irreversible or outward-facing actions (pushes to shared remotes, opening PRs or issues) require confirmation.
 - No secrets in the repo.
 
 ## Authoring conventions
@@ -98,11 +96,6 @@ Assist level: L<n> — <one-line justification>
 - Body: workflow steps, decision rules, output format. Long material goes in `references/`.
 - One skill, one job. Every skill ships `references/examples.md`; examples use stand-in setting details and say so.
 
-### Instructions (`plugins/<p>/instructions/*.md`)
-
-- Purpose in one paragraph, then the roles table with assist levels. Shared content via `{{include shared/<file>.md}}`.
-- Keep `project.md` under ~8k characters rendered.
-
 ## Workflow
 
 1. **Read** the plugin README and the existing files.
@@ -123,8 +116,7 @@ Assist level: L<n> — <one-line justification>
 | `make tools` | Fetch the pinned gitleaks into `.tools/` |
 | `make check-render` | Fail if any `plugins/*/src/**` render is stale |
 | `make test` | Plugin structure, both targets installed into scratch repos, lore-check, the setting-content guard; then the scaffold's own tests |
-| `make build` | Render `plugins/*/src/**` in place, and `instructions/*` into `dist/<plugin>/` |
-| `make package [ALL=1]` / `make package-done` | Zip changed skills and list changed Project instructions for claude.ai / record them as uploaded |
+| `make build` | Render `plugins/*/src/**` in place |
 | `make install TARGET=<t> DEST=<repo>` | Vendor a target into `<repo>/.claude/` (commit it there) |
 | `make check-target TARGET=<t> DEST=<repo>` | Report drift; exit 1 if the target is edited, outdated, or stale |
 | `make docs-export SITE=<repo> [DRY=1]` | Export `docs/` to the sites monorepo's `content/automate.system9studios.com/` (commit it there) |
