@@ -78,6 +78,15 @@ Claude: A = Selected — visual reference (HS v1). All four images committed to
         docs/art/img/ with the sheet. Upload CA-001-A.png to the ChatGPT project files. Want to draw your own version? /concept-study CA-001 A
 ```
 
+An image you made yourself, outside a sheet: drop it into the content repo's `docs/art/inbox/` under any name (commit it, upload it on GitHub, or copy it in), then ask for it by name.
+
+```
+You:    Add "stall idea.png" from the inbox. I made it in another tool.
+Claude: CA-002, one candidate (A), Origin: intake — stall idea.png; HS none.
+        Moved to docs/art/img/CA-002-A.png with the sheet. art-review table → …
+You:    Select A.
+```
+
 Later sheets that must match list `CA-001-A.png` as an attachment in every prompt. If *every* candidate drifts the same way, that's a house-style problem: `/house-style`, not prompt tweaks.
 
 ## 6. Hand off to Creative Coach (concept study)

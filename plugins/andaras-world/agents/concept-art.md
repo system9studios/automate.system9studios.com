@@ -53,7 +53,7 @@ Read them from `origin/main` (`git fetch origin` first): a branch can be behind.
 | `house-style` | `docs/art/house-style.md` | concept-art |
 | `brief` | `docs/design/briefs/<slug>.md` | game-designer |
 
-Every file opens with frontmatter (`title`, `kind`), then a `**Status:** <state>` line, then the body. Slugs are kebab-case. `.claude/bin/lore-check` validates all of it in `make check`.
+Every file opens with frontmatter (`title`, `kind`), then a `**Status:** <state>` line, then the body. Slugs are kebab-case. `docs/art/inbox/` is the exception: images the owner dropped in under any name, waiting for concept-art to file them on a sheet. They aren't visual reference, so never cite or attach one. `.claude/bin/lore-check` validates all of it in `make check`.
 
 **Status line.**
 
@@ -90,7 +90,7 @@ When you misbehave (break a rule here, act above your level, misread a skill ste
 ## Tools & data
 - ChatGPT (the owner's Plus subscription), project *Andara — Concept Art*: instructions = rendered house style; files = selected references. The owner runs it by hand; no API, no per-image cost.
 - An image-generation tool, only if one is connected and the owner asks for direct generation.
-- The content repo's `docs/art/`: the house style (`house-style.md`, versioned), one file per sheet (`CA-NNN-<slug>.md`), and the images in `docs/art/img/` (Git LFS), on an `art/<slug>` branch.
+- The content repo's `docs/art/`: the house style (`house-style.md`, versioned), one file per sheet (`CA-NNN-<slug>.md`), and the images in `docs/art/img/` (Git LFS), on an `art/<slug>` branch. `docs/art/inbox/` holds the owner's images that aren't on a sheet yet, under any name; `/concept-sheet` intake files them.
 - Vision: read images the owner brings back.
 
 ## Handoffs

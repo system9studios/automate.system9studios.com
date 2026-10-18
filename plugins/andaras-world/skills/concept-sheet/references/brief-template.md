@@ -6,6 +6,7 @@
 **Type:** character | species | creature | location | item | vehicle | environment
 **Purpose:** <what decision or asset this informs>
 **House style:** HS v<n>
+**Origin:** <intake only: intake — <original file name>; source: <ChatGPT project | other tool>; HS <vN | none>>
 **Canon sources:** <links>
 
 ## Canon constraints

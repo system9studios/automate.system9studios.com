@@ -125,7 +125,9 @@ class ContentRoleTest(unittest.TestCase):
                     ".claude/skills/aw-author/SKILL.md", ".claude/roles/content.md"):
             self.assertTrue((self.repo / rel).is_file(), rel)
         self.assertFalse((self.repo / ".claude/skills/lore-sync").exists())
-        self.assertIn("docs/art/img/** filter=lfs", (self.repo / ".gitattributes").read_text())
+        attrs = (self.repo / ".gitattributes").read_text()
+        self.assertIn("docs/art/img/** filter=lfs", attrs)
+        self.assertIn("docs/art/inbox/** filter=lfs", attrs)
         claude = (self.repo / "CLAUDE.md").read_text()
         self.assertNotIn("Notion", claude)
         self.assertNotIn("docs/lore", claude)
@@ -306,6 +308,9 @@ class LoreCheckTest(unittest.TestCase):
         self.page("design/briefs/cast-strain.md", title="Strain", kind="brief", status="draft")
         (self.docs / "art/img").mkdir()
         (self.docs / "art/img/CA-001-A.png").write_bytes(b"lfs pointer")
+        (self.docs / "art/inbox").mkdir()
+        for name in ("my idea (2).PNG", "stall_v3.jpeg", "x.webp"):  # any name, no sheet needed
+            (self.docs / "art/inbox" / name).write_bytes(b"lfs pointer")
         (self.docs / "glossary.md").write_text("# Glossary\n")   # not a managed page
         r = self.check()
         self.assertEqual(r.returncode, 0, r.stderr)
@@ -326,12 +331,16 @@ class LoreCheckTest(unittest.TestCase):
         (self.docs / "art/img").mkdir(parents=True)
         (self.docs / "art/img/CA-002-A.png").write_bytes(b"x")
         (self.docs / "art/img/gate.png").write_bytes(b"x")
+        (self.docs / "art/inbox/later").mkdir(parents=True)
+        (self.docs / "art/inbox/notes.md").write_text("# notes\n")
+        (self.docs / "art/inbox/later/idea.png").write_bytes(b"x")
         (self.docs / "lore/canon").mkdir(parents=True)
         err = self.check().stderr
         for msg in ("docs/canon/Bad Name.md: not a known place", "kind 'sheet' should be 'canon'",
                     "status 'approved' isn't", "docs/sheets/spaceship/z.md: not a known place",
                     "must be **Status:**", "no concept sheet CA-002", "images are art/img/",
-                    "docs/lore/ is retired"):
+                    "docs/lore/ is retired", "docs/art/inbox/notes.md: the inbox holds images only",
+                    "docs/art/inbox/later/idea.png: the inbox holds images only"):
             self.assertIn(msg, err)
 
     def test_changes_marks_approvals(self):

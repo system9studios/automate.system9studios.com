@@ -15,6 +15,7 @@ Where each kind lives (paths relative to docs/):
     tracker       tracker.md
     sheet         sheets/<type>/<slug>.md
     concept       art/CA-NNN-<slug>.md, images art/img/CA-NNN-<letter>.<ext> (Git LFS)
+    (inbox)       art/inbox/<any name>.<ext>: images not yet on a sheet (Git LFS), flat, no pages
     house-style   art/house-style.md
     brief         design/briefs/<slug>.md
 
@@ -41,6 +42,7 @@ LAYOUT = [  # (kind, pattern relative to docs/)
 ]
 OWNED = ("canon/", "tracker.md", "sheets/", "art/", "design/")
 IMAGE = re.compile(r"^art/img/(CA-\d{3})-[A-Z]\.(png|jpe?g|webp)$")
+INBOX = re.compile(r"^art/inbox/[^/]+\.(png|jpe?g|webp)$", re.I)
 DASH = r"\s*[—–-]\s*"
 APPROVED = {
     "canon": re.compile(rf"^v\d+\.\d+{DASH}approved canon\b", re.I),
@@ -88,7 +90,7 @@ def check(docs: Path) -> tuple[list[str], list[tuple[str, str, dict, str]]]:
         if not f.is_file():
             continue
         rel = f.relative_to(docs).as_posix()
-        if not rel.startswith(OWNED) or IMAGE.match(rel) or rel.startswith("art/img/"):
+        if not rel.startswith(OWNED) or rel.startswith(("art/img/", "art/inbox/")):
             continue
         kind = kind_of(rel)
         if kind is None:
@@ -121,6 +123,12 @@ def check(docs: Path) -> tuple[list[str], list[tuple[str, str, dict, str]]]:
                 problems.append(f"docs/{rel}: images are art/img/CA-NNN-<letter>.png|jpg|webp")
             elif m.group(1) not in concepts:
                 problems.append(f"docs/{rel}: no concept sheet {m.group(1)}-<slug>.md")
+    inbox = docs / "art/inbox"
+    if inbox.is_dir():
+        for f in sorted(p for p in inbox.rglob("*") if p.is_file()):
+            rel = f.relative_to(docs).as_posix()
+            if not INBOX.match(rel):
+                problems.append(f"docs/{rel}: the inbox holds images only (png|jpg|webp), not in subdirectories")
     return problems, pages
 
 

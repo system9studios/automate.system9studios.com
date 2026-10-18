@@ -11,6 +11,7 @@ docs/canon/<slug>.md       # setting canon (world-builder); authoritative
 docs/tracker.md            # content tracker: backlog, §18 targets, §19 phase order (the owner ticks it)
 docs/sheets/<type>/        # content sheets: npc, faction, item, creature, conflict, mystery, hook, zone (content)
 docs/art/                  # house-style.md, CA-NNN-<slug>.md concept sheets, img/ (Git LFS) (concept-art)
+docs/art/inbox/            # images not on a sheet yet, any file name (Git LFS); concept-art files them
 docs/design/briefs/        # mechanic briefs (game-designer); specs live on the server
 docs/content/<pack>.md     # pack map, counts vs. tracker §18, TODO(owner) count, open gaps
 docs/glossary.md           # domain terms used in packs
