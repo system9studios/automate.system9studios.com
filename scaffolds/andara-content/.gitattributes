@@ -1,1 +1,2 @@
 docs/art/img/** filter=lfs diff=lfs merge=lfs -text
+docs/art/inbox/** filter=lfs diff=lfs merge=lfs -text

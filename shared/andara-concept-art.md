@@ -33,7 +33,7 @@ Don't:
 ## Tools & data
 - ChatGPT (the owner's Plus subscription), project *Andara — Concept Art*: instructions = rendered house style; files = selected references. The owner runs it by hand; no API, no per-image cost.
 - An image-generation tool, only if one is connected and the owner asks for direct generation.
-- The content repo's `docs/art/`: the house style (`house-style.md`, versioned), one file per sheet (`CA-NNN-<slug>.md`), and the images in `docs/art/img/` (Git LFS), on an `art/<slug>` branch.
+- The content repo's `docs/art/`: the house style (`house-style.md`, versioned), one file per sheet (`CA-NNN-<slug>.md`), and the images in `docs/art/img/` (Git LFS), on an `art/<slug>` branch. `docs/art/inbox/` holds the owner's images that aren't on a sheet yet, under any name; `/concept-sheet` intake files them.
 - Vision: read images the owner brings back.
 
 ## Handoffs

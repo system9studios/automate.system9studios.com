@@ -49,6 +49,8 @@ amendment to an approved page: [PROPOSED] lines + Revisions entry; the PR stays 
 
 Every image the owner brings back, selected or rejected, is committed with its sheet to `docs/art/img/` (Git LFS).
 
+An image the owner made outside a sheet goes into `docs/art/inbox/` under any name; `/concept-sheet` intake ("add `<file>` from the inbox") opens a one-candidate sheet for it, records its origin and house-style version (`HS none` if made outside the ChatGPT project), and moves it to `docs/art/img/CA-NNN-A.<ext>`.
+
 The study-brief contract is `shared/study-brief.md`, shared with `creative-coach`.
 
 ## Delivery

@@ -1,6 +1,6 @@
 ---
 name: concept-sheet
-description: Produce an Andara's World concept sheet (a canon-grounded brief, 3–4 candidate designs, and a copy-ready prompt for each to run in the owner's ChatGPT "Andara — Concept Art" project), then record the images they bring back. Trigger on "concept the…", "what does X look like", "give me prompts for…", "explore designs for…", "here are the images for CA-NNN". Not for setting or changing the house style (house-style), turning a selected concept into a drawing study (concept-study), reviewing an image (art-review), logos or site UI (valesor-dev visual-designer), or drawing practice (creative-coach).
+description: Produce an Andara's World concept sheet (a canon-grounded brief, 3–4 candidate designs, and a copy-ready prompt for each to run in the owner's ChatGPT "Andara — Concept Art" project), then record the images they bring back. Also takes in an image the owner made outside a sheet, from `docs/art/inbox/`. Trigger on "concept the…", "what does X look like", "give me prompts for…", "explore designs for…", "here are the images for CA-NNN", "add this file from the inbox", "I made an image for X", "what's in the inbox". Not for setting or changing the house style (house-style), turning a selected concept into a drawing study (concept-study), reviewing an image (art-review), logos or site UI (valesor-dev visual-designer), or drawing practice (creative-coach).
 ---
 
 # Concept sheet
@@ -27,5 +27,15 @@ Output in chat: sheet path and PR URL (or "not pushed"), the candidate theses, t
 3. Ask the owner to select. On selection: mark the chosen candidates `Selected — visual reference (HS vN)` and the rest `Rejected` (keep them). Tell them to upload the selected files to the ChatGPT project's files so later prompts can reference them. Hand any facts the image implies to world-builder or content-developer as `[PROPOSED]`. Commit the images and the updated sheet on the sheet's branch (a new `art/` branch if it has merged).
 4. Offer one study: "Want to draw your own version? `/concept-study CA-NNN <letter>`". Offer, don't push.
 
+## Intake: an image made outside a sheet
+The owner drops images into `docs/art/inbox/` under any name (commit, GitHub upload, or copy into the working tree) and refers to one by file name. Nothing in the inbox is visual reference until it's filed and selected.
+1. **Find it.** `git fetch origin`; look in `docs/art/inbox/` in the working tree, then on `origin/main`. Match the name the owner gave, loosely (case, extension). Ask if none or several match. "What's in the inbox" lists each file with a one-line read of it, and stops.
+2. **Origin.** Ask where it came from if the owner hasn't said: the *Andara — Concept Art* project (which `HS vN` was current), another tool (`HS none`), or their own drawing. Their own drawing is a study: suggest `/concept-study` and stop.
+3. **Sheet.** Branch and `CA-NNN` as in *Create a sheet* step 1. Brief from canon (step 2) and the owner's idea; *Visual canon (proposed)* lists what the image decides where canon is silent. One candidate, A, the owner's image. Add an `**Origin:**` line under `**House style:**`: `intake — <original file name>; source: <ChatGPT project | other tool>; HS <vN | none>`. No prompts and no B–D unless the owner asks for variants; then *Create a sheet* steps 4–6 for B–D, with A as a consistency reference.
+4. **File it.** `git mv docs/art/inbox/<name> docs/art/img/CA-NNN-A.<ext>` (lowercase extension; plain `mv` and `git add` if the file was never committed) in the same commit as the sheet, then `make check-lore`, so the inbox keeps only unfiled images.
+5. **Review and select** as in *When the owner brings images back*, steps 2–4. With `HS none`, `art-review` judges house-style fit explicitly; a selection reads `Selected — visual reference (HS none)`.
+
+"Discard `<file>`" deletes it from the inbox on a branch, committed with the owner's confirmation; it never becomes a sheet.
+
 ## Close
-One next action: run the prompts, select from A–D, or take the study.
+One next action: run the prompts, select from A–D, file an inbox image, or take the study.

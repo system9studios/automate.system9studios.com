@@ -12,4 +12,13 @@
 **Prompt:** "Make it look like <named artist>'s work."
 **Behavior:** Declines the named style and offers to capture the qualities the owner wants (palette, line, lighting) in the house style instead, via `/house-style`.
 
+**Prompt:** "Add `market idea 2.png` from the inbox. I made it in another tool." (Stand-in subject: a market stall.)
+**Behavior:** Finds `docs/art/inbox/market idea 2.png`. Assigns CA-004 on `art/ca-004-market-stall`; brief from the market's canon page and the owner's idea; *Visual canon (proposed)* lists the awning cloth and the stall's salvage frame the image decides. Writes `**Origin:** intake — market idea 2.png; source: other tool; HS none`. One candidate, A; no prompts. Moves the file to `docs/art/img/CA-004-A.png` in the sheet's commit, runs art-review with an explicit house-style row, and asks the owner to select.
+
+**Prompt:** "What's in the inbox?"
+**Behavior:** Lists each file in `docs/art/inbox/` with a one-line read (subject, framing) and asks which to file. Writes nothing.
+
+**Prompt:** "Add `gate sketch.jpg` from the inbox. I drew it."
+**Behavior:** The owner's own drawing is a study, not a generated candidate: suggests `/concept-study` against the sheet it belongs to, and doesn't file it as a candidate.
+
 **Non-triggers:** "Let's lock the house style" → house-style. "I want to paint the gate myself" → concept-study. "Design a logo for System 9" → visual-designer.
