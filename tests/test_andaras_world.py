@@ -134,7 +134,7 @@ class ContentRoleTest(unittest.TestCase):
         self.assertEqual(sorted(p.stem for p in (self.repo / ".claude/roles").glob("*.md")),
                          ["_repo", "concept-art", "content", "game-designer", "producer",
                           "world-builder", "writing-assistant"])
-        for skill in ("producer-start-cycle", "producer-close-cycle"):
+        for skill in ("producer-start-cycle", "producer-close-cycle", "producer-publish"):
             self.assertTrue((self.repo / f".claude/skills/{skill}/SKILL.md").is_file(), skill)
 
     def test_scaffold_uses_release_tools(self):
@@ -201,9 +201,10 @@ class ContentRoleTest(unittest.TestCase):
         self.assertIn("Active role: producer", charter)
         self.assertIn("Assist level: L2", charter)
         self.assertIn("Story moves (.claude/bin/story): new>draft, draft>ready", charter)
-        self.assertIn("Role skills: /producer-start-cycle /producer-close-cycle", charter)
+        self.assertIn("Role skills: /producer-start-cycle /producer-close-cycle /producer-publish", charter)
         self.assertEqual(self.decision("docs/planning/roadmap.md"), "allow")
         self.assertEqual(self.decision("docs/planning/cycles/CYCLE-01.md"), "allow")
+        self.assertEqual(self.decision("docs/planning/publishes.md"), "allow")
         for rel in ("content/starter_village/zones/commons.aw", "docs/content/starter_village.md",
                     "docs/canon/x.md", "docs/sheets/npc/x.md"):
             self.assertEqual(self.decision(rel), "deny", rel)

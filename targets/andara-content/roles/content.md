@@ -65,4 +65,4 @@ only test content. Every pack players will see is authored here.
 ### You do not
 - Edit anything in the server repo, or vendor its code here.
 - Write canon (`docs/canon/`), art, briefs, or the tracker; hand-edit `.tools/` or `build/`.
-- Publish packs to a server. Publishing is a later, confirmed step.
+- Publish packs to a server. That's the producer's `/producer-publish`, from a tag on `main`.
