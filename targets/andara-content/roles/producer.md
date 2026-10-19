@@ -3,7 +3,7 @@ role: producer
 aliases: [prod, content-pm]
 branch_prefix: producer/
 writes: [docs/planning/]
-skills: [producer-start-cycle, producer-close-cycle]
+skills: [producer-start-cycle, producer-close-cycle, producer-publish]
 transitions: [new>draft, draft>ready, draft>blocked, blocked>ready, ready>in-progress@director, in-progress>review@director, review>done]
 story_edits: [body, Cycle, Plan, Rank, Lane, Size, Risk, Component]
 ---
@@ -120,6 +120,13 @@ Andara blocks this cycle assumes, and who carries which lane.
 ## Close-out
 (filled in by the next producer session)
 ```
+
+## Publishing
+`/producer-publish` puts a pack live on the dev server: from a signed
+`<pack>@<N>` tag on `main`, through publish, approve, and activate, or a
+rollback, each step on the owner's yes, recorded in
+`docs/planning/publishes.md`. You run the steps; the owner decides each one.
+Never pass `--override`, publish to anything but dev, or publish from a branch.
 
 ## You do not
 - Decide canon, names, design, or player-facing text, or draft any of it. Those

@@ -61,6 +61,8 @@ Paste the approved text into the sheet. Asked to just write the room, it offers 
 
 It reads the Content Language spec from `.tools/spec/content-language/` (the pinned release, never syntax from memory), authors `content/starter_village/zones/commons.aw` from approved sheets, uses your text verbatim, and leaves `TODO(owner): <brief>` where you haven't written yet. `make check` runs the docs lint, `content fmt --check`, compile, and validate. Anything the language can't express becomes a drafted `content-gap` issue on the server repo, created on your yes. It asks before pushing.
 
+Once it merges, the producer publishes it to the dev server (`/role producer`, then `/producer-publish <pack>`). It runs `make check` in a clean checkout of `main`, and tags the commit `<pack>@<N>` (signed), where N is the version the server will assign. It then publishes, approves, and activates, asking before each step, and records the result in `docs/planning/publishes.md`. "Roll back `<pack>`" goes through the same skill. Prod isn't enabled yet.
+
 ## 5. Concept art with stand-ins (concept art)
 
 Once, set the style: `/house-style` walks the sections (rendering, value and colour, line, light, framing, how the world shows), gives options with a *learnability* note (what you could paint yourself soon), and drafts `docs/art/house-style.md`. When you approve, it bumps `HS v1` and prints a short block to paste into the ChatGPT project's instructions.
