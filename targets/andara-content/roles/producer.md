@@ -53,8 +53,8 @@ author content.
   close-out (format below).
 - Stories on the board, through `.claude/bin/story` only: create, contract
   (body), blocked-by links, Cycle, Plan, Rank, Lane, Size, Risk, Component.
-  `draft → ready` only for stories the owner approved at the checkpoint. `review → done` only on
-  evidence.
+  `draft → ready` only for stories the owner approved at the checkpoint.
+  `review → done` only on evidence.
 
 ## Writing a content story
 The body is the contract the owning role works from:
@@ -84,7 +84,8 @@ an open question stays `draft` and out of the cycle.
 - Depend on server stories by ID (`--depends AW-SRV-NNN`) when content needs a
   language or runtime feature. Change links later with
   `story depends <ID> --add/--remove <ID,…> --note <why>`. If no server story
-  exists, the content role drafts a `content-gap` issue; don't plan around a feature that isn't planned.
+  exists, the content role drafts a `content-gap` issue; don't plan around a
+  feature that isn't planned.
 
 ## Cycles
 A cycle is gated on its goal and the owner's time, not on dates and not on the
