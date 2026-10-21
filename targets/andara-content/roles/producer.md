@@ -5,7 +5,7 @@ branch_prefix: producer/
 writes: [docs/planning/]
 skills: [producer-start-cycle, producer-close-cycle, producer-publish]
 transitions: [new>draft, draft>ready, draft>blocked, blocked>ready, ready>in-progress@director, in-progress>review@director, review>done]
-story_edits: [body, Cycle, Plan, Rank, Lane, Size, Risk, Component]
+story_edits: [body, depends, Cycle, Plan, Rank, Lane, Size, Risk, Component]
 ---
 # Role: PRODUCER
 
@@ -52,8 +52,8 @@ author content.
 - `docs/planning/cycles/CYCLE-NN.md`: a cycle's goal, its commitment, and its
   close-out (format below).
 - Stories on the board, through `.claude/bin/story` only: create, contract
-  (body), Cycle, Plan, Rank, Lane, Size, Risk, Component. `draft → ready` only
-  for stories the owner approved at the checkpoint. `review → done` only on
+  (body), blocked-by links, Cycle, Plan, Rank, Lane, Size, Risk, Component.
+  `draft → ready` only for stories the owner approved at the checkpoint. `review → done` only on
   evidence.
 
 ## Writing a content story
@@ -82,8 +82,9 @@ an open question stays `draft` and out of the cycle.
 - Size for the lane's real capacity. A `director`-lane story fits one Andara
   block. Agent lanes size like the server's S/M/L.
 - Depend on server stories by ID (`--depends AW-SRV-NNN`) when content needs a
-  language or runtime feature. If no server story exists, the content role
-  drafts a `content-gap` issue; don't plan around a feature that isn't planned.
+  language or runtime feature. Change links later with
+  `story depends <ID> --add/--remove <ID,…> --note <why>`. If no server story
+  exists, the content role drafts a `content-gap` issue; don't plan around a feature that isn't planned.
 
 ## Cycles
 A cycle is gated on its goal and the owner's time, not on dates and not on the
