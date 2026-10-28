@@ -269,6 +269,13 @@ class ServerTargetTest(unittest.TestCase):
         out = run(self.role, "hook-pre-tool-use", cwd=self.repo, stdin=json.dumps(payload)).stdout
         self.assertEqual(json.loads(out)["hookSpecificOutput"]["permissionDecision"] if out else "allow", "allow")
 
+    def test_story_moves_need_the_records_the_charters_name(self):
+        # `story check` and `story status` gate on these; a charter that only names a record gates nothing
+        records = {f.stem: fm(f.read_text()).get("records", "").strip()
+                   for f in (self.repo / ".claude/roles").glob("*.md") if not f.name.startswith("_")}
+        self.assertEqual(records["architecture"], "[review>done: §8]")
+        self.assertEqual(records["sre"], "[draft>ready: Observability review, review>done: §8 instrumentation]")
+
 
 PAGE = """---
 title: {title}
