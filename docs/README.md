@@ -4,7 +4,7 @@ How to use the System 9 Studios agents for Andara's World: world building, conce
 
 | Page | For |
 |---|---|
-| [Getting started](getting-started.md) | The two Andara repos, where each agent runs, setting a repo up, updates |
+| [Getting started](getting-started.md) | The two Andara repos, the Ninth Gate audio repo, where each agent runs, setting a repo up, updates |
 | [Role catalog](roles.md) | Every role: what it produces, what the owner produces, its skills; the rules all of them follow |
 | [Workflows](workflows.md) | Worked sessions, from a canon decision to content in the game and a study for the owner |
 

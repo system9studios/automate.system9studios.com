@@ -1,0 +1,7 @@
+{
+  "description": "Ninth Gate audio production monorepo (valesordev/ninth-gate). Roles: pm, product, architecture, sre, implementation, visual-designer. Music roles (songwriter, sound-designer, mix-engineer, mastering-engineer, release-manager) incubate in the repo's own .claude/ until promoted (ADR-0006).",
+  "plugins": [
+    "valesor-dev"
+  ],
+  "roles": "roles"
+}
