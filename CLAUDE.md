@@ -1,6 +1,6 @@
 # CLAUDE.md — automate.system9studios.com
 
-Agent configuration for System 9 Studios' creative work: the `andaras-world` and `andara-design` Claude Code plugins, the shared charters they include, and the agent config (targets) for the two Andara's World repos. When working in this repo you build and maintain agents; you don't do their downstream work (no canon, no content, no art).
+Agent configuration for System 9 Studios' creative work: the `andaras-world` and `andara-design` Claude Code plugins, the shared charters they include, and the agent config (targets) for the two Andara's World repos and the Ninth Gate audio repo. When working in this repo you build and maintain agents; you don't do their downstream work (no canon, no content, no art).
 
 ## Mission
 
@@ -29,7 +29,8 @@ Help the owner move projects forward, build lasting skills while doing it, and u
 │   └── andara-design/                # game-designer base role, mechanic skills, src/
 ├── targets/
 │   ├── andaras-world/                # the game server repo (valesordev/andara.valesordev.com); migrations/
-│   └── andara-content/               # the content repo (valesordev/andara.solo7.media)
+│   ├── andara-content/               # the content repo (valesordev/andara.solo7.media)
+│   └── ninth-gate/                   # the audio production repo (valesordev/ninth-gate); valesor-dev only
 ├── scaffolds/andara-content/         # a new content repo; `make scaffold NAME=andara-content DEST=…`
 └── tests/                            # plugin structure, targets, lore-check, setting-content guard
 ```
@@ -42,10 +43,10 @@ Plugins load in place, so nothing expands `{{include}}` at load time. A file tha
 
 | Surface | How agents arrive |
 |---|---|
-| Claude Code in an Andara repo (local **and cloud**) | `make install TARGET=<t> DEST=<repo>` vendors into the repo's `.claude/`, and you commit it there. |
+| Claude Code in a target repo (local **and cloud**) | `make install TARGET=<t> DEST=<repo>` vendors into the repo's `.claude/`, and you commit it there. |
 | Claude Code outside those repos, Cowork | `make dev` registers this checkout as a marketplace; install plugins from it. |
 
-Cloud sessions don't load plugins, so vendoring is the rule in the Andara repos. Don't also install a vendored plugin locally, or its skills and hooks run twice. Roles, `/role`, hooks, lanes, and the coordinator are `valesor-dev`'s: see its README in automate.valesordev.com.
+Cloud sessions don't load plugins, so vendoring is the rule in the target repos. Don't also install a vendored plugin locally, or its skills and hooks run twice. Roles, `/role`, hooks, lanes, and the coordinator are `valesor-dev`'s: see its README in automate.valesordev.com.
 
 ### The Andara boundary
 
@@ -135,7 +136,7 @@ Assist level: L<n> — <one-line justification>
 - Every role declares its assist level, triggers, behaviors, handoffs, and session close.
 - Shared behavior lives in `shared/` and is inlined at build time, not duplicated.
 - `make validate test check-public` passes; `make build` is clean; no setting content in-tree.
-- Both Andara repos re-installed and `make check-target` clean when the change touches them.
+- Every target repo the change touches re-installed and `make check-target` clean.
 - Signed commits on a feature branch, `plugin.json` version bumped if behavior changed.
 
 ## Working style

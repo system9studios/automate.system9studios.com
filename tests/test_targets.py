@@ -1,4 +1,4 @@
-"""The Andara targets' own charters and settings, on top of the valesor-dev machinery pinned from V."""
+"""The targets' own charters and settings, on top of the valesor-dev machinery pinned from V."""
 import hashlib
 import json
 import re
@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 TOOLKIT = ROOT / ".deps/valesordev/toolkit"
-TARGETS = ("andaras-world", "andara-content")
+TARGETS = ("andaras-world", "andara-content", "ninth-gate")
 
 
 def run(*cmd, cwd=None):
@@ -47,9 +47,43 @@ class ServerChartersTest(TargetCase):
         self.assertFalse((content / ".claude/roles/product.md").exists())
 
 
+class NinthGateTest(TargetCase):
+    """valesor-dev only; the music roles are the repo's own, unmanaged files."""
+    def test_vendors_valesor_dev_only(self):
+        repo = self.install("ninth-gate")
+        andara = {d.name for p in ("andaras-world", "andara-design") for d in (ROOT / "plugins" / p / "skills").iterdir()}
+        self.assertTrue(andara)
+        self.assertFalse(andara & {d.name for d in (repo / ".claude/skills").iterdir()})
+        self.assertFalse((repo / ".claude/roles/world-builder.md").exists())
+
+    def test_standard_roles_work_the_board(self):
+        repo = self.install("ninth-gate")
+        for role in ("pm", "architecture", "implementation"):
+            self.assertIn("stories-on-github.md", (repo / f".claude/roles/{role}.md").read_text(), role)
+        for role in ("product", "sre", "visual-designer"):
+            self.assertIn("## Ninth Gate", (repo / f".claude/roles/{role}.md").read_text(), role)
+
+    def test_acceptance_docs_are_not_architectures(self):
+        arch = (self.install("ninth-gate") / ".claude/roles/architecture.md").read_text()
+        self.assertIn('"!docs/specs/acceptance/"', arch)
+
+    def test_local_music_roles_survive_install(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        repo = Path(tmp.name)
+        run("git", "init", "-q", cwd=repo)
+        local = repo / ".claude/roles/mix-engineer.md"
+        local.parent.mkdir(parents=True)
+        local.write_text("---\nrole: mix-engineer\n---\n# Role: MIX ENGINEER (stand-in)\n")
+        before = local.read_bytes()
+        r = run(sys.executable, str(TOOLKIT / "install.py"), "--root", str(ROOT), "ninth-gate", str(repo))
+        self.assertEqual(r.returncode, 0, r.stderr + r.stdout)
+        self.assertEqual(local.read_bytes(), before)
+
+
 class LaneSettingsTest(unittest.TestCase):
     def test_starting_lanes_is_always_put_to_the_person(self):
-        for t in TARGETS:   # both vendor the coordinator
+        for t in TARGETS:   # all vendor the coordinator
             perms = json.loads((ROOT / "targets" / t / "settings.json").read_text())["permissions"]
             self.assertIn("Bash(.claude/bin/coordinator run:*)", perms["ask"], t)
             self.assertIn("Bash(.claude/bin/coordinator clean:*)", perms["ask"], t)

@@ -38,6 +38,21 @@ Create the labels once: `content-gap` on the server repo, `content-need` and `ro
 
 First session: `claude`, `/role world-builder`: canon starts in `docs/canon/`. Protect `docs/canon/`, `docs/tracker.md`, and `docs/art/house-style.md` with a CODEOWNERS entry for the owner.
 
+## Ninth Gate
+
+`valesordev/ninth-gate`, the audio production repo, uses target `ninth-gate`. It vendors `valesor-dev` only: no Andara plugin, no canon.
+
+| Role | From |
+|---|---|
+| `pm`, `architecture`, `implementation` | Target charters (`targets/ninth-gate/roles/`), stories on the org Project "Ninth Gate" (`NG-<comp>-NNN`) |
+| `product`, `sre`, `visual-designer` | The `valesor-dev` base, extended for the studio: product releases are studio capabilities, production is the studio rig, art is release artwork |
+| `songwriter`, `sound-designer`, `mix-engineer`, `mastering-engineer`, `release-manager` | Not here. They incubate as committed, unmanaged files in that repo's own `.claude/roles/` and `.claude/skills/` until promoted as a plugin. Install leaves them alone. |
+
+```sh
+make install TARGET=ninth-gate DEST=<ninth-gate repo>
+make check-target TARGET=ninth-gate DEST=<ninth-gate repo>
+```
+
 ## Updating the agents
 
 1. Change the source here. Agents, base roles, and each skill's `references/canon-rules.md` are **generated** from `plugins/<p>/src/` and `shared/`: edit those, then `make build`.
