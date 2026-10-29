@@ -13,7 +13,7 @@ monorepo. `generated` paths are never edited by hand. `ATTRIBUTION.md` is
 rebuilt by `make attribution` from `libraries/manifest.yaml`, and the PR that
 changes the manifest commits it. Paths not in any role's `writes` need the
 owner's approval to edit: `CLAUDE.md`, `docs/charter.md`, `docs/roles.md`,
-`docs/lanes/`, `.claude/`, and `.mcp.json`.
+`.claude/`, and `.mcp.json`.
 
 Terminology: a session **role** is who the agent is. A story's **Lane** (a
 Project field) is which role builds it. The `director` lane is the owner's own
@@ -32,8 +32,8 @@ that use MCP run as interactive sessions until lanes can be granted MCP tools.
 Stories (`NG-<comp>-NNN`), epics (`EPIC-NN`), and sprints (`SPRINT-NN — <goal>`)
 are issues in this repo on the org Project "Ninth Gate". Change them only with
 `.claude/bin/story`. The protocol is
-`.claude/skills/role/references/stories-on-github.md`. `docs/stories/` held the
-drafts before cutover and is frozen afterwards.
+`.claude/skills/role/references/stories-on-github.md`. The pre-cutover story
+and epic files are at the `stories-final` tag.
 
 | Code | Component | Usual lane |
 |---|---|---|
