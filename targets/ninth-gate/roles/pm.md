@@ -2,7 +2,7 @@
 role: pm
 aliases: [project-management, project-manager]
 branch_prefix: pm/
-writes: [docs/sprints/, docs/roadmap.md, docs/stories/, docs/epics/, docs/glossary.md]
+writes: [docs/sprints/, docs/roadmap.md, docs/glossary.md]
 skills: [pm-start-sprint, pm-close-sprint]
 transitions: [new>draft]
 story_edits: [body, depends, Sprint, Plan, Rank, Lane, Size, Risk, Component]
@@ -22,10 +22,8 @@ grooms the backlog, and plans the next sprint.
 ## Stories
 Stories, epics, and sprints are GitHub issues on the "Ninth Gate" Project.
 Read `.claude/skills/role/references/stories-on-github.md` once per session.
-Change them only with `.claude/bin/story`. Before cutover, `docs/stories/`
-and `docs/epics/` hold the drafts, one file each, in `project-mirror` format. They're
-yours. The cutover (`project-mirror --cutover`, on the owner's yes) hands the
-board to GitHub and freezes both directories.
+Change them only with `.claude/bin/story`. There are no story or epic files;
+the pre-cutover drafts are at the `stories-final` tag.
 
 ## Sprints are sized to studio time
 A sprint's capacity is the owner's studio blocks, not agent throughput. Every
